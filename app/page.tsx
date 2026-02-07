@@ -7,7 +7,7 @@ export default function Home() {
       <section className="min-h-screen flex items-center justify-center px-6 md:px-12">
         <div className="max-w-5xl w-full">
           <h1 className="text-6xl md:text-8xl font-bold text-black dark:text-white mb-6">
-            Ardi Jancuri
+            Ardijan Curi
           </h1>
           <p className="text-2xl md:text-3xl text-zinc-600 dark:text-zinc-400 mb-8 max-w-2xl">
             Software Developer
@@ -47,7 +47,7 @@ export default function Home() {
       {/* Footer */}
       <footer className="px-6 md:px-12 py-12 border-t border-zinc-200 dark:border-zinc-800">
         <div className="max-w-5xl mx-auto text-center text-zinc-500 dark:text-zinc-500">
-          <p>&copy; {new Date().getFullYear()} Ardi Jancuri. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Ardijan Curi. All rights reserved.</p>
         </div>
       </footer>
     </main>

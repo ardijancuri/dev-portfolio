@@ -15,7 +15,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ardi Jancuri - Software Developer",
+  title: "Ardijan Curi - Software Developer",
   description: "Software developer portfolio showcasing modern web applications and projects.",
 };
 
