@@ -4,7 +4,8 @@
       "Bash(timeout /t 5)",
       "Bash(netstat:*)",
       "Bash(findstr:*)",
-      "WebFetch(domain:www.linkedin.com)"
+      "WebFetch(domain:www.linkedin.com)",
+      "Bash(taskkill:*)"
     ],
     "deny": [],
     "ask": []

@@ -99,7 +99,7 @@ export default function Projects({ username }: { username: string }) {
   }
 
   // Get unique languages for categorization
-  const languages = Array.from(new Set(repos.map((repo) => repo.language).filter(Boolean)));
+  const languages = Array.from(new Set(repos.map((repo) => repo.language).filter((lang): lang is string => Boolean(lang))));
   const categories = ["All", ...languages];
 
   // Filter repos by selected category
