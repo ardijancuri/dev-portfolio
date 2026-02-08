@@ -91,14 +91,14 @@ function matrixScene(tick: number): string[] {
 // Circle: single pulsing ring
 function circleEdgeDist(dx: number, dy: number, tick: number): number {
   const dist = Math.sqrt(dx * dx + dy * dy);
-  const radius = Math.sin(tick * 0.15) * 2 + 7;
+  const radius = Math.sin(tick * 0.15) * 1.5 + 6;
   return Math.abs(dist - radius);
 }
 
 // Ripples: concentric wave rings
 function ripplesEdgeDist(dx: number, dy: number, tick: number): number {
   const dist = Math.sqrt(dx * dx + dy * dy);
-  if (dist > 10) return 99;
+  if (dist > 8.5) return 99;
   const wave = Math.sin(dist * 1.2 - tick * 0.25) * 0.5 + 0.5;
   return wave > 0.55 ? (1 - wave) * 3 : 99;
 }
@@ -107,8 +107,8 @@ function ripplesEdgeDist(dx: number, dy: number, tick: number): number {
 function starEdgeDist(dx: number, dy: number, tick: number): number {
   const dist = Math.sqrt(dx * dx + dy * dy);
   const points = 5;
-  const outerR = Math.sin(tick * 0.1) * 1.5 + 8;
-  const innerR = Math.sin(tick * 0.15 + 1) * 1.5 + 3.5;
+  const outerR = Math.sin(tick * 0.1) * 1.5 + 7;
+  const innerR = Math.sin(tick * 0.15 + 1) * 1.5 + 3;
   const rotation = tick * 0.04;
   const angle = Math.atan2(dy, dx) + rotation;
   const sector = ((angle % (Math.PI * 2)) + Math.PI * 2) % (Math.PI * 2);
@@ -121,10 +121,12 @@ function starEdgeDist(dx: number, dy: number, tick: number): number {
 }
 
 // Scene 3: Morphing shapes (circle → ripples → star with smooth transitions)
+const shapeLabels = ["evolve()", "persist()", "adapt()"];
+
 function morphingScene(tick: number): string[] {
   const grid = createEmptyGrid();
   const cx = COLS / 2;
-  const cy = ROWS / 2;
+  const cy = ROWS / 2 + 1;
   const chars = ".:+*#@";
 
   // 3 shapes, each shown for 50 ticks with 15-tick transition between them
@@ -163,6 +165,24 @@ function morphingScene(tick: number): string[] {
     }
   }
 
+  // Label above the shape — typed out character by character
+  const label = shapeLabels[shapeIndex % 3];
+  const labelRow = 0;
+  const startX = Math.floor((COLS - label.length) / 2);
+  // Type 1 char every 2 ticks, only during non-transitioning phase
+  const typingChars = blend > 0.3 ? 0 : Math.min(label.length, Math.floor(inShape / 2));
+  for (let i = 0; i < typingChars; i++) {
+    if (startX + i >= 0 && startX + i < COLS) {
+      grid[labelRow][startX + i] = label[i];
+    }
+  }
+  // Blinking cursor after typed text
+  if (typingChars > 0 && typingChars < label.length && startX + typingChars < COLS) {
+    if (Math.floor(tick / 4) % 2 === 0) {
+      grid[labelRow][startX + typingChars] = "_";
+    }
+  }
+
   return grid.map((row) => row.join(""));
 }
 
@@ -170,7 +190,7 @@ type SceneFn = (tick: number) => string[];
 
 const scenes: { fn: SceneFn; duration: number; speed: number }[] = [
   { fn: codeTypingScene, duration: 80, speed: 60 },
-  { fn: matrixScene, duration: 60, speed: 100 },
+  { fn: matrixScene, duration: 35, speed: 100 },
   { fn: morphingScene, duration: 150, speed: 80 },
 ];
 

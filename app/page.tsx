@@ -47,7 +47,7 @@ export default function Home() {
             </div>
 
             {/* ASCII Animation */}
-            <div className="order-1 md:order-2 flex items-center justify-center md:justify-start mb-6 md:mb-0">
+            <div className="order-1 md:order-2 flex items-center justify-center md:justify-start mt-6 mb-6 md:mb-0">
               <ASCIIAnimation />
             </div>
           </div>
