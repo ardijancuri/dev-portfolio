@@ -9,7 +9,7 @@ export default function Home() {
       <header className="fixed top-0 left-0 right-0 z-50 pt-6 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-6 md:px-8 lg:px-12">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70 text-black dark:text-white">
-            <svg className="w-12 h-11" viewBox="0 0 88 80" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <svg className="w-9 h-8 sm:w-12 sm:h-11" viewBox="0 0 88 80" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
               <path d="M84.6736 0C78.6669 5.71521 72.448 13.859 71.9135 24.2362C71.3435 35.0719 76.3332 42.1423 82.3268 49.0801L88 55.6441C82.2206 48.9549 72.9434 40.4355 60.5261 39.8168C49.5652 39.2534 42.4131 44.1861 35.3952 50.1112L0 80C6.76651 74.2866 15.403 65.1357 16.0102 52.8399C16.5987 42.0244 11.5904 34.9338 5.61548 28.0181L0.0149001 21.5351C5.79428 28.2244 15.0715 36.7438 27.5075 37.3827C38.4683 37.9461 45.6036 32.9932 52.6197 27.0681L84.6736 0Z" />
             </svg>
           </a>
