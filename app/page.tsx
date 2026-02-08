@@ -1,27 +1,24 @@
 import Projects from "@/components/Projects";
 import ASCIILogo from "@/components/ASCIILogo";
-import Image from "next/image";
+import ThemeToggle from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-black">
       {/* Logo Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 pt-6 sm:pt-8 pb-4 sm:pb-6 px-4">
-        <div className="flex justify-center">
-          <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70">
-            <Image
-              src="/oninova-logo.svg"
-              alt="Oninova Logo"
-              width={66}
-              height={60}
-              className="w-12 h-11 sm:w-16 sm:h-14 md:w-[66px] md:h-[60px]"
-            />
+      <header className="fixed top-0 left-0 right-0 z-50 pt-6 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-6 md:px-8 lg:px-12">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70 text-black dark:text-white">
+            <svg className="w-12 h-11" viewBox="0 0 88 80" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M84.6736 0C78.6669 5.71521 72.448 13.859 71.9135 24.2362C71.3435 35.0719 76.3332 42.1423 82.3268 49.0801L88 55.6441C82.2206 48.9549 72.9434 40.4355 60.5261 39.8168C49.5652 39.2534 42.4131 44.1861 35.3952 50.1112L0 80C6.76651 74.2866 15.403 65.1357 16.0102 52.8399C16.5987 42.0244 11.5904 34.9338 5.61548 28.0181L0.0149001 21.5351C5.79428 28.2244 15.0715 36.7438 27.5075 37.3827C38.4683 37.9461 45.6036 32.9932 52.6197 27.0681L84.6736 0Z" />
+            </svg>
           </a>
+          <ThemeToggle />
         </div>
       </header>
 
       {/* Hero Section */}
-      <section className="min-h-[100svh] flex items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 pt-20 sm:pt-20 pb-12">
+      <section className="min-h-[100svh] flex items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 pt-12 sm:pt-12 pb-12">
         <div className="max-w-7xl w-full">
           {/* Two columns: Bio (left) | ASCII (right) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0 md:gap-4 lg:gap-8 items-center">
