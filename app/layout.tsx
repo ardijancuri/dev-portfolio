@@ -14,7 +14,7 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
-const siteUrl = "https://ardijancuri.netlify.app";
+const siteUrl = "https://ardijan.oninova.net";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

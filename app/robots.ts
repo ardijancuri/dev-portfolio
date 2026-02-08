@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
     },
-    sitemap: "https://ardijancuri.netlify.app/sitemap.xml",
+    sitemap: "https://ardijan.oninova.net/sitemap.xml",
   };
 }
