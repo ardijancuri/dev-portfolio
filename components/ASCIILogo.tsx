@@ -301,7 +301,7 @@ export default function ASCIILogo() {
 
   return (
     <div ref={ref} className="select-none w-full flex items-center justify-center overflow-hidden" aria-hidden="true">
-      <pre ref={preRef} className="font-mono text-[4px] sm:text-[8px] md:text-[10px] lg:text-xs leading-[1.4] text-zinc-400 dark:text-zinc-600 whitespace-pre" />
+      <pre ref={preRef} className="font-mono text-[5px] sm:text-[8px] md:text-[10px] lg:text-xs leading-[1.4] text-zinc-400 dark:text-zinc-600 whitespace-pre" />
     </div>
   );
 }
