@@ -14,9 +14,54 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "500", "600"],
 });
 
+const siteUrl = "https://ardijancuri.netlify.app";
+
 export const metadata: Metadata = {
-  title: "Ardijan Curi - Software Developer",
-  description: "Software developer portfolio showcasing modern web applications and projects.",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: "Ardijan Curi | Software Engineer - Oninova",
+    template: "%s | Ardijan Curi",
+  },
+  description:
+    "Co-Founder & Software Engineer at Oninova. Building digital products, scalable web applications, and performance-driven solutions.",
+  keywords: [
+    "Ardijan Curi",
+    "Software Engineer",
+    "Web Developer",
+    "Oninova",
+    "Full Stack Developer",
+    "Next.js",
+    "React",
+    "TypeScript",
+  ],
+  authors: [{ name: "Ardijan Curi", url: siteUrl }],
+  creator: "Ardijan Curi",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: siteUrl,
+    siteName: "Ardijan Curi",
+    title: "Ardijan Curi | Software Engineer - Oninova",
+    description:
+      "Co-Founder & Software Engineer at Oninova. Building digital products, scalable web applications, and performance-driven solutions.",
+  },
+  twitter: {
+    card: "summary",
+    title: "Ardijan Curi | Software Engineer - Oninova",
+    description:
+      "Co-Founder & Software Engineer at Oninova. Building digital products, scalable web applications, and performance-driven solutions.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
+  },
+  alternates: {
+    canonical: siteUrl,
+  },
 };
 
 export default function RootLayout({
