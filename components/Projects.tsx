@@ -124,7 +124,7 @@ export default function Projects({ username }: { username: string }) {
     <div>
       {/* Category Filter - Scrollable on mobile */}
       <div className="mb-8 sm:mb-10 md:mb-12">
-        <div className="overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
+        <div className="overflow-x-auto scrollbar-hide pb-2 -mx-4 px-4 sm:mx-0 sm:px-0">
           <div className="flex gap-2 sm:gap-3 min-w-max sm:min-w-0 sm:flex-wrap">
             {categories.map((category) => (
               <button
