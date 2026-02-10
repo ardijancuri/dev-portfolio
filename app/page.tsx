@@ -77,7 +77,7 @@ export default function Home() {
                   GitHub
                 </a>
                 <a
-                  href="mailto:ardijan.curi@oninova.net"
+                  href="mailto:ardijan@oninova.net"
                   className="sm:w-36 flex items-center justify-start gap-2 px-5 py-2 border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-medium"
                 >
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
