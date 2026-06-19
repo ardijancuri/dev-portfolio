@@ -64,12 +64,6 @@ const filledCellsByDist = [...filledCells].sort((a, b) => {
   const db = (b[0] - centerRow) ** 2 + ((b[1] - centerCol) / 2) ** 2;
   return da - db;
 });
-// Pre-compute max distance for radius calculation
-const maxDist = Math.sqrt(
-  (filledCellsByDist[filledCellsByDist.length - 1][0] - centerRow) ** 2 +
-  ((filledCellsByDist[filledCellsByDist.length - 1][1] - centerCol) / 2) ** 2
-);
-
 // Pre-compute fast lookup grid and row bounds
 const GRID_ROWS = LOGO_LINES.length;
 const GRID_COLS = Math.max(...LOGO_LINES.map(l => l.length));

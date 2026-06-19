@@ -1,21 +1,13 @@
+import Link from "next/link";
 import Projects from "@/components/Projects";
 import ASCIILogo from "@/components/ASCIILogo";
-import ThemeToggle from "@/components/ThemeToggle";
+import BlogSlider from "@/components/BlogSlider";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-white dark:bg-black">
-      {/* Logo Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 pt-6 sm:pt-8 pb-4 sm:pb-6 px-4 sm:px-6 md:px-8 lg:px-12">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
-          <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="transition-opacity hover:opacity-70 text-black dark:text-white">
-            <svg className="w-9 h-8 sm:w-12 sm:h-11" viewBox="0 0 88 80" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M84.6736 0C78.6669 5.71521 72.448 13.859 71.9135 24.2362C71.3435 35.0719 76.3332 42.1423 82.3268 49.0801L88 55.6441C82.2206 48.9549 72.9434 40.4355 60.5261 39.8168C49.5652 39.2534 42.4131 44.1861 35.3952 50.1112L0 80C6.76651 74.2866 15.403 65.1357 16.0102 52.8399C16.5987 42.0244 11.5904 34.9338 5.61548 28.0181L0.0149001 21.5351C5.79428 28.2244 15.0715 36.7438 27.5075 37.3827C38.4683 37.9461 45.6036 32.9932 52.6197 27.0681L84.6736 0Z" />
-            </svg>
-          </a>
-          <ThemeToggle />
-        </div>
-      </header>
+      <SiteHeader />
 
       {/* Hero Section */}
       <section className="min-h-[100svh] flex items-center justify-center px-4 sm:px-6 md:px-8 lg:px-12 pt-12 sm:pt-12 pb-12">
@@ -60,8 +52,13 @@ export default function Home() {
                   rel="noopener noreferrer"
                   className="sm:w-36 flex items-center justify-start gap-2 px-5 py-2 border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-medium"
                 >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 0 1 9-9" />
+                  <svg
+                    className="h-4 w-5 flex-shrink-0"
+                    viewBox="0 0 88 80"
+                    fill="currentColor"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M84.6736 0C78.6669 5.71521 72.448 13.859 71.9135 24.2362C71.3435 35.0719 76.3332 42.1423 82.3268 49.0801L88 55.6441C82.2206 48.9549 72.9434 40.4355 60.5261 39.8168C49.5652 39.2534 42.4131 44.1861 35.3952 50.1112L0 80C6.76651 74.2866 15.403 65.1357 16.0102 52.8399C16.5987 42.0244 11.5904 34.9338 5.61548 28.0181L0.0149001 21.5351C5.79428 28.2244 15.0715 36.7438 27.5075 37.3827C38.4683 37.9461 45.6036 32.9932 52.6197 27.0681L84.6736 0Z" />
                   </svg>
                   Oninova
                 </a>
@@ -93,6 +90,29 @@ export default function Home() {
               <ASCIILogo />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Blog Section */}
+      <section id="blog" className="px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8 sm:mb-12 md:mb-16 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+              <p className="mb-3 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
+                Blog
+              </p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white">
+                Latest writing
+              </h2>
+            </div>
+            <Link
+              href="/blog"
+              className="w-fit border-2 border-zinc-200 px-5 py-3 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
+            >
+              View all posts
+            </Link>
+          </div>
+          <BlogSlider />
         </div>
       </section>
 

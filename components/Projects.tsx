@@ -77,11 +77,6 @@ export default function Projects({ username }: { username: string }) {
     });
   }, [username]);
 
-  // Reset to page 1 when category changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [selectedCategory]);
-
   if (loading) {
     return (
       <div className="text-zinc-500 dark:text-zinc-500">
@@ -129,7 +124,10 @@ export default function Projects({ username }: { username: string }) {
             {categories.map((category) => (
               <button
                 key={category}
-                onClick={() => setSelectedCategory(category)}
+                onClick={() => {
+                  setSelectedCategory(category);
+                  setCurrentPage(1);
+                }}
                 className={`px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium transition-all whitespace-nowrap touch-manipulation cursor-pointer ${
                   selectedCategory === category
                     ? "bg-black dark:bg-white text-white dark:text-black"
@@ -203,7 +201,7 @@ export default function Projects({ username }: { username: string }) {
             Showing {startIndex + 1}-{Math.min(endIndex, filteredRepos.length)} of {filteredRepos.length} projects
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex max-w-full flex-wrap items-center justify-center gap-2">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -212,7 +210,7 @@ export default function Projects({ username }: { username: string }) {
               Previous
             </button>
 
-            <div className="flex gap-1">
+            <div className="flex flex-wrap justify-center gap-1">
               {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                 <button
                   key={page}

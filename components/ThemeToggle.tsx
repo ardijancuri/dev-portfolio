@@ -1,22 +1,44 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+const themeChangeEvent = "theme-change";
+
+function readDarkPreference() {
+  try {
+    return localStorage.getItem("theme") !== "light";
+  } catch {
+    return true;
+  }
+}
+
+function subscribeToThemeChanges(onStoreChange: () => void) {
+  const handleThemeChange = () => {
+    document.documentElement.classList.toggle("dark", readDarkPreference());
+    onStoreChange();
+  };
+
+  window.addEventListener("storage", handleThemeChange);
+  window.addEventListener(themeChangeEvent, handleThemeChange);
+
+  return () => {
+    window.removeEventListener("storage", handleThemeChange);
+    window.removeEventListener(themeChangeEvent, handleThemeChange);
+  };
+}
 
 export default function ThemeToggle() {
-  const [dark, setDark] = useState(true);
-
-  useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const isDark = stored !== "light";
-    setDark(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
-  }, []);
+  const dark = useSyncExternalStore(
+    subscribeToThemeChanges,
+    readDarkPreference,
+    () => true
+  );
 
   const toggle = () => {
     const next = !dark;
-    setDark(next);
     document.documentElement.classList.toggle("dark", next);
     localStorage.setItem("theme", next ? "dark" : "light");
+    window.dispatchEvent(new Event(themeChangeEvent));
   };
 
   return (
