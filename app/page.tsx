@@ -86,7 +86,7 @@ export default function Home() {
             </div>
 
             {/* ASCII Logo */}
-            <div className="order-1 md:order-2 flex items-center justify-center md:justify-center mt-6 mb-6 ">
+            <div className="order-1 md:order-2 flex items-center justify-center md:justify-center mt-2 mb-4 sm:mt-6 sm:mb-6">
               <ASCIILogo />
             </div>
           </div>

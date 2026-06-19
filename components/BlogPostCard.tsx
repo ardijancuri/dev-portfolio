@@ -17,7 +17,7 @@ export default function BlogPostCard({
       href={`/blog/${post.slug}`}
       className={
         isHomeVariant
-          ? "group flex h-full flex-col border-2 border-zinc-200 bg-white transition-colors duration-200 hover:border-zinc-500 dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-500"
+          ? "group flex h-full flex-col border-2 border-zinc-200 bg-white transition-colors duration-200 hover:border-black dark:border-zinc-800 dark:bg-black dark:hover:border-white"
           : "group flex h-full flex-col border-2 border-zinc-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-black hover:shadow-lg dark:border-zinc-800 dark:bg-black dark:hover:border-white"
       }
     >
