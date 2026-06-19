@@ -79,6 +79,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>
