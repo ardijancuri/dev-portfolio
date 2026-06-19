@@ -36,7 +36,7 @@ export async function isAdminUser(userId: string) {
   return Boolean(data);
 }
 
-export async function requireAdmin(redirectTo = "/admin/blog/new") {
+export async function requireAdmin(redirectTo = "/admin/blog") {
   if (!hasSupabaseEnv()) {
     redirect(`/login?redirectTo=${encodeURIComponent(redirectTo)}`);
   }

@@ -13,7 +13,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
   const [loading, setLoading] = useState(false);
 
   const safeRedirect = useMemo(() => {
-    return redirectTo.startsWith("/") ? redirectTo : "/admin/blog/new";
+    return redirectTo.startsWith("/") ? redirectTo : "/admin/blog";
   }, [redirectTo]);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {

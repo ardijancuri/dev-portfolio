@@ -20,7 +20,7 @@ export default async function LoginPage({
   const params = await searchParams;
   const redirectTo = params.redirectTo?.startsWith("/")
     ? params.redirectTo
-    : "/admin/blog/new";
+    : "/admin/blog";
   const userId = await getCurrentUserId();
 
   if (userId && (await isAdminUser(userId))) {
@@ -39,8 +39,8 @@ export default async function LoginPage({
             Publish from the portfolio.
           </h1>
           <p className="mt-5 max-w-xl text-base leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-lg">
-            Sign in with the approved owner account to create blog posts and
-            upload hero images.
+            Sign in with the approved owner account to create, edit, and remove
+            blog posts.
           </p>
         </div>
 

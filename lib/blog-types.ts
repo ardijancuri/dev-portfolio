@@ -22,4 +22,5 @@ export type BlogPostSummary = Pick<
   | "hero_image_url"
   | "author"
   | "created_at"
+  | "updated_at"
 >;

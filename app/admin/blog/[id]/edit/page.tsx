@@ -1,20 +1,33 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import AdminBlogForm from "@/components/AdminBlogForm";
+import { notFound } from "next/navigation";
+import EditBlogPostForm from "@/components/EditBlogPostForm";
 import LogoutButton from "@/components/LogoutButton";
 import SiteHeader from "@/components/SiteHeader";
 import { requireAdmin } from "@/lib/admin";
+import { getBlogPostById } from "@/lib/blog";
 
 export const metadata: Metadata = {
-  title: "New Blog Post",
+  title: "Edit Blog Post",
   robots: {
     index: false,
     follow: false,
   },
 };
 
-export default async function NewBlogPostPage() {
-  await requireAdmin("/admin/blog/new");
+export default async function EditBlogPostPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  await requireAdmin(`/admin/blog/${id}/edit`);
+
+  const post = await getBlogPostById(id);
+
+  if (!post) {
+    notFound();
+  }
 
   return (
     <main className="min-h-screen bg-white px-4 pt-32 text-black dark:bg-black dark:text-white sm:px-6 md:px-8 lg:px-12">
@@ -26,8 +39,11 @@ export default async function NewBlogPostPage() {
               Admin
             </p>
             <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
-              New blog post
+              Edit post
             </h1>
+            <p className="mt-4 max-w-2xl truncate font-mono text-xs text-zinc-500 dark:text-zinc-500">
+              /blog/{post.slug}
+            </p>
           </div>
           <div className="flex flex-wrap items-center gap-3">
             <Link
@@ -40,7 +56,7 @@ export default async function NewBlogPostPage() {
           </div>
         </div>
 
-        <AdminBlogForm />
+        <EditBlogPostForm post={post} />
       </section>
     </main>
   );
