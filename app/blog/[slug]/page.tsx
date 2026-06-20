@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
@@ -103,15 +102,17 @@ export default async function BlogPostPage({
           </div>
         </header>
 
-        <div className="relative aspect-[16/9] max-h-[70svh] min-h-[18rem] w-full overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-          <Image
-            src={post.hero_image_url}
-            alt=""
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
+        <div className="px-4 sm:px-6 md:px-8 lg:px-12">
+          <figure className="mx-auto max-w-5xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.hero_image_url}
+              alt=""
+              loading="eager"
+              decoding="async"
+              className="h-auto w-full"
+            />
+          </figure>
         </div>
 
         <div className="px-4 py-12 sm:px-6 md:px-8 lg:px-12">
