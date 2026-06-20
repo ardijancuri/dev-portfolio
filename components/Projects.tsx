@@ -320,7 +320,7 @@ export default function Projects({
                   <button
                     key={item}
                     onClick={() => handlePageChange(item)}
-                    className={`h-9 min-w-20 cursor-pointer px-3 text-sm font-medium transition-colors ${
+                    className={`h-9 w-9 cursor-pointer text-sm font-medium transition-colors ${
                       currentPage === item
                         ? "bg-black text-white dark:bg-white dark:text-black"
                         : "border-2 border-zinc-200 text-black hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
@@ -332,7 +332,7 @@ export default function Projects({
                   <span
                     key={item}
                     aria-hidden="true"
-                    className="flex h-9 min-w-20 items-center justify-center px-3 text-sm font-medium text-zinc-500 dark:text-zinc-500"
+                    className="flex h-9 w-9 items-center justify-center text-sm font-medium text-zinc-500 dark:text-zinc-500"
                   >
                     ...
                   </span>
