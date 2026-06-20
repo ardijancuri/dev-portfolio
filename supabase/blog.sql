@@ -11,7 +11,7 @@ create table if not exists public.blog_posts (
   id uuid primary key default gen_random_uuid(),
   title text not null check (char_length(trim(title)) between 3 and 160),
   slug text not null unique check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
-  excerpt text not null check (char_length(trim(excerpt)) between 10 and 300),
+  excerpt text not null check (char_length(trim(excerpt)) between 10 and 800),
   content text not null check (char_length(trim(content)) >= 20),
   hero_image_path text not null,
   hero_image_url text not null,
@@ -20,6 +20,11 @@ create table if not exists public.blog_posts (
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_excerpt_check,
+  add constraint blog_posts_excerpt_check
+  check (char_length(trim(excerpt)) between 10 and 800);
 
 create index if not exists blog_posts_created_at_idx
   on public.blog_posts (created_at desc);

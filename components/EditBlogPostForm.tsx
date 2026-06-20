@@ -6,6 +6,7 @@ import {
   updateBlogPost,
 } from "@/app/admin/blog/actions";
 import type { BlogPost } from "@/lib/blog-types";
+import { MAX_BLOG_EXCERPT_CHARS } from "@/lib/blog-utils";
 
 const initialState: EditBlogPostState = {};
 
@@ -66,12 +67,15 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             id="excerpt"
             name="excerpt"
             minLength={10}
-            maxLength={300}
-            rows={4}
+            maxLength={MAX_BLOG_EXCERPT_CHARS}
+            rows={6}
             required
             defaultValue={post.excerpt}
             className="w-full resize-y border-2 border-zinc-200 bg-white px-4 py-3 text-black outline-none transition-colors focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:focus:border-white"
           />
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+            Markdown links are supported. Max {MAX_BLOG_EXCERPT_CHARS} characters.
+          </p>
         </div>
 
         <div>

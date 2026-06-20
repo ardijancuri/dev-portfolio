@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/admin";
 import {
   ALLOWED_HERO_IMAGE_TYPES,
   BLOG_HERO_BUCKET,
+  MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_IMAGE_BYTES,
   extensionForMimeType,
   slugifyTitle,
@@ -35,8 +36,8 @@ function validatePostFields({
     return "Title must be between 3 and 160 characters.";
   }
 
-  if (excerpt.length < 10 || excerpt.length > 300) {
-    return "Excerpt must be between 10 and 300 characters.";
+  if (excerpt.length < 10 || excerpt.length > MAX_BLOG_EXCERPT_CHARS) {
+    return `Excerpt must be between 10 and ${MAX_BLOG_EXCERPT_CHARS} characters.`;
   }
 
   if (content.length < 20) {
