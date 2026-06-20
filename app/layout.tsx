@@ -61,6 +61,13 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
+  icons: {
+    icon: [
+      { url: "/fav-icon.png", sizes: "32x32", type: "image/png" },
+      { url: "/fav-icon.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/fav-icon.png" }],
+  },
 };
 
 export default function RootLayout({
