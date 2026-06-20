@@ -3,6 +3,7 @@ import Link from "next/link";
 import Projects from "@/components/Projects";
 import ASCIILogo from "@/components/ASCIILogo";
 import BlogSlider from "@/components/BlogSlider";
+import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
@@ -118,8 +119,9 @@ export default async function Home() {
       </section>
 
       {/* Blog Section */}
-      <section id="blog" className="px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24 border-t border-zinc-200 dark:border-zinc-800">
+      <section id="blog" className="px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
         <div className="max-w-7xl mx-auto">
+          <div className="mb-16 border-t border-zinc-200 dark:border-zinc-800" />
           <div className="mb-8 sm:mb-12 md:mb-16 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="mb-3 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
@@ -150,12 +152,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-10 md:py-12 border-t border-zinc-200 dark:border-zinc-800">
-        <div className="max-w-5xl mx-auto text-center text-sm sm:text-base text-zinc-500 dark:text-zinc-500">
-          <p>&copy; {new Date().getFullYear()} Ardijan Curi. {t.home.footerRights}</p>
-        </div>
-      </footer>
+      <SiteFooter locale={locale} />
     </main>
   );
 }

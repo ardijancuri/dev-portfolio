@@ -42,7 +42,16 @@ const SIDE_CHARS = "+=-:.";
 
 const ROTATION_SPEED = 0.03;
 const TRANSITION_TICKS = 30;
-const POINTER_EASE = 0.12;
+const ROTATION_TICK_MS = 70;
+const POINTER_EASE = 0.32;
+const POINTER_PUSH_RADIUS = 0.42;
+const POINTER_PUSH_COLS = 6;
+const POINTER_PUSH_ROWS = 2;
+const SHOCKWAVE_DURATION_MS = 1450;
+const SHOCKWAVE_MAX_RADIUS = 1.85;
+const SHOCKWAVE_WIDTH = 0.14;
+const SHOCKWAVE_PUSH_COLS = 7;
+const SHOCKWAVE_PUSH_ROWS = 2.4;
 
 const GRID_ROWS = LOGO_LINES.length;
 const GRID_COLS = Math.max(...LOGO_LINES.map((line) => line.length));
@@ -140,6 +149,14 @@ interface LightState {
   intensity: number;
 }
 
+interface ShockwaveState {
+  x: number;
+  y: number;
+  radius: number;
+  width: number;
+  intensity: number;
+}
+
 function createGrid() {
   return Array.from({ length: GRID_ROWS }, () =>
     new Array(GRID_COLS).fill(" ")
@@ -148,6 +165,10 @@ function createGrid() {
 
 function gridToText(grid: string[][]) {
   return grid.map((row) => row.join("")).join("\n");
+}
+
+function clamp(value: number, min: number, max: number) {
+  return Math.max(min, Math.min(max, value));
 }
 
 function isFilled(grid: boolean[][], row: number, col: number) {
@@ -233,7 +254,80 @@ function paintAttachedSide(
   }
 }
 
-function computeRotatedText(tick: number, pointerLight: LightState) {
+function deformCell(
+  row: number,
+  col: number,
+  pointerLight: LightState,
+  shockwave: ShockwaveState | null
+) {
+  const normalizedCol = (col - centerCol) / (GRID_COLS * 0.5);
+  const normalizedRow = (row - centerRow) / (GRID_ROWS * 0.5);
+  let colOffset = 0;
+  let rowOffset = 0;
+  let force = 0;
+  let waveForce = 0;
+
+  if (pointerLight.intensity >= 0.02) {
+    const dx = normalizedCol - pointerLight.x;
+    const dy = normalizedRow - pointerLight.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    if (distance < POINTER_PUSH_RADIUS) {
+      let directionX = dx;
+      let directionY = dy;
+      let directionLength = distance;
+
+      if (directionLength < 0.01) {
+        directionX = normalizedCol || 0.1;
+        directionY = normalizedRow || 0.1;
+        directionLength = Math.sqrt(directionX * directionX + directionY * directionY);
+      }
+
+      const falloff = 1 - distance / POINTER_PUSH_RADIUS;
+      const pointerForce = falloff * falloff * pointerLight.intensity;
+      const ripple = 0.86 + Math.sin(falloff * Math.PI) * 0.18;
+
+      colOffset +=
+        (directionX / directionLength) * pointerForce * POINTER_PUSH_COLS * ripple;
+      rowOffset +=
+        (directionY / directionLength) * pointerForce * POINTER_PUSH_ROWS * ripple;
+      force = Math.max(force, pointerForce);
+    }
+  }
+
+  if (shockwave) {
+    const dx = normalizedCol - shockwave.x;
+    const dy = normalizedRow - shockwave.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+    const ringDistance = Math.abs(distance - shockwave.radius);
+
+    if (ringDistance < shockwave.width && distance > 0.01) {
+      const ringFalloff = 1 - ringDistance / shockwave.width;
+      waveForce =
+        Math.sin(ringFalloff * Math.PI * 0.5) ** 2 * shockwave.intensity;
+
+      colOffset += (dx / distance) * waveForce * SHOCKWAVE_PUSH_COLS;
+      rowOffset += (dy / distance) * waveForce * SHOCKWAVE_PUSH_ROWS;
+      force = Math.max(force, waveForce);
+    }
+  }
+
+  const pushedCol = Math.round(col + colOffset);
+  const pushedRow = Math.round(row + rowOffset);
+
+  return {
+    row: clamp(pushedRow, 0, GRID_ROWS - 1),
+    col: clamp(pushedCol, 0, GRID_COLS - 1),
+    force,
+    waveForce,
+  };
+}
+
+function computeRotatedText(
+  tick: number,
+  pointerLight: LightState,
+  shockwave: ShockwaveState | null
+) {
   const transitionProgress = Math.min(1, tick / TRANSITION_TICKS);
   const transition =
     transitionProgress * transitionProgress * (3 - 2 * transitionProgress);
@@ -355,18 +449,32 @@ function computeRotatedText(tick: number, pointerLight: LightState) {
         ch = isEdge ? "*" : "%";
       }
 
+      const deformed = deformCell(row, screenCol, pointerLight, shockwave);
+
+      if (deformed.force > 0.16 && (row + screenCol + tick) % 3 === 0) {
+        ch = pickChar(SURFACE_CHARS, Math.min(1, baseLight + deformed.force * 0.32));
+      }
+
+      if (deformed.waveForce > 0.12) {
+        const shockLight = Math.min(1, baseLight + deformed.waveForce * 0.68);
+        ch =
+          deformed.waveForce > 0.42 && (row + screenCol + tick) % 4 === 0
+            ? SHIMMER_CHARS[(row * 17 + screenCol * 23 + tick) % SHIMMER_CHARS.length]
+            : pickChar(SURFACE_CHARS, shockLight);
+      }
+
       if (attachedDepth > 0) {
         paintAttachedSide(
           output,
-          row,
-          screenCol,
+          deformed.row,
+          deformed.col,
           sideDirection,
           attachedDepth,
-          baseLight
+          baseLight + deformed.force * 0.18
         );
       }
 
-      output[row][screenCol] = ch;
+      output[deformed.row][deformed.col] = ch;
     }
   }
 
@@ -390,6 +498,13 @@ export default function ASCIILogo() {
   const phase = useRef<"waiting" | "reveal" | "rotating">("waiting");
   const rafRef = useRef<number | null>(null);
   const lastTime = useRef(0);
+  const lastRotationTime = useRef(0);
+  const shockwaveRef = useRef({
+    x: 0,
+    y: 0,
+    startedAt: 0,
+    active: false,
+  });
 
   useEffect(() => {
     if (!ref.current) {
@@ -413,6 +528,31 @@ export default function ASCIILogo() {
         x: pointer.x,
         y: pointer.y,
         intensity: pointer.intensity,
+      };
+    };
+    const readShockwave = (time: number): ShockwaveState | null => {
+      const shockwave = shockwaveRef.current;
+
+      if (!shockwave.active) {
+        return null;
+      }
+
+      const progress = (time - shockwave.startedAt) / SHOCKWAVE_DURATION_MS;
+
+      if (progress >= 1) {
+        shockwave.active = false;
+        return null;
+      }
+
+      const easedProgress = progress * progress * (3 - 2 * progress);
+      const intensity = (1 - progress) ** 0.9;
+
+      return {
+        x: shockwave.x,
+        y: shockwave.y,
+        radius: easedProgress * SHOCKWAVE_MAX_RADIUS,
+        width: SHOCKWAVE_WIDTH + progress * 0.08,
+        intensity,
       };
     };
 
@@ -444,12 +584,22 @@ export default function ASCIILogo() {
 
           if (revealCount.current >= totalFilledChars) {
             phase.current = "rotating";
+            lastRotationTime.current = time;
           }
         }
-      } else if (elapsed >= 70) {
-        lastTime.current = time;
-        rotationTick.current++;
-        setText(computeRotatedText(rotationTick.current, readPointerLight()));
+      } else {
+        if (time - lastRotationTime.current >= ROTATION_TICK_MS) {
+          lastRotationTime.current = time;
+          rotationTick.current++;
+        }
+
+        setText(
+          computeRotatedText(
+            rotationTick.current,
+            readPointerLight(),
+            readShockwave(time)
+          )
+        );
       }
 
       rafRef.current = requestAnimationFrame(animate);
@@ -466,14 +616,35 @@ export default function ASCIILogo() {
     };
   }, []);
 
+  const readPointerPosition = (event: React.PointerEvent<HTMLDivElement>) => {
+    const rect =
+      preRef.current?.getBoundingClientRect() ??
+      event.currentTarget.getBoundingClientRect();
+
+    if (rect.width <= 0 || rect.height <= 0) {
+      return null;
+    }
+
+    const pointerCol = ((event.clientX - rect.left) / rect.width) * GRID_COLS;
+    const pointerRow = ((event.clientY - rect.top) / rect.height) * GRID_ROWS;
+
+    return {
+      x: clamp((pointerCol - centerCol) / (GRID_COLS * 0.5), -1.2, 1.2),
+      y: clamp((pointerRow - centerRow) / (GRID_ROWS * 0.5), -1.2, 1.2),
+    };
+  };
+
   const updatePointerLight = (event: React.PointerEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-    const y = ((event.clientY - rect.top) / rect.height) * 2 - 1;
+    const position = readPointerPosition(event);
+
+    if (!position) {
+      return;
+    }
+
     const pointer = pointerRef.current;
 
-    pointer.targetX = Math.max(-1, Math.min(1, x));
-    pointer.targetY = Math.max(-1, Math.min(1, y));
+    pointer.targetX = position.x;
+    pointer.targetY = position.y;
     pointer.targetIntensity = 1;
   };
 
@@ -481,12 +652,33 @@ export default function ASCIILogo() {
     pointerRef.current.targetIntensity = 0;
   };
 
+  const triggerShockwave = (event: React.PointerEvent<HTMLDivElement>) => {
+    const position = readPointerPosition(event);
+
+    if (!position) {
+      return;
+    }
+
+    const pointer = pointerRef.current;
+
+    pointer.targetX = position.x;
+    pointer.targetY = position.y;
+    pointer.targetIntensity = 1;
+    shockwaveRef.current = {
+      x: position.x,
+      y: position.y,
+      startedAt: performance.now(),
+      active: true,
+    };
+  };
+
   return (
     <div
       ref={ref}
       onPointerMove={updatePointerLight}
+      onPointerDown={triggerShockwave}
       onPointerLeave={dimPointerLight}
-      className="mx-auto flex aspect-square w-full max-w-[26rem] select-none items-center justify-center overflow-hidden sm:mx-0 sm:min-h-[325px] sm:max-w-none sm:aspect-auto md:min-h-[410px] lg:min-h-[490px]"
+      className="mx-auto flex aspect-square w-full max-w-[26rem] cursor-crosshair select-none items-center justify-center overflow-hidden sm:mx-0 sm:min-h-[325px] sm:max-w-none sm:aspect-auto md:min-h-[410px] lg:min-h-[490px]"
       aria-hidden="true"
     >
       <pre

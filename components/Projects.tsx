@@ -64,6 +64,75 @@ const languageColors: { [key: string]: string } = {
 
 const ALL_CATEGORY = "__all__";
 
+type PaginationItem = number | "ellipsis-start" | "ellipsis-end";
+
+function range(start: number, end: number) {
+  return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+}
+
+function getPaginationItems(
+  totalPages: number,
+  currentPage: number,
+  maxItems: number
+): PaginationItem[] {
+  if (totalPages <= maxItems) {
+    return range(1, totalPages);
+  }
+
+  if (maxItems <= 5) {
+    if (currentPage <= 3) {
+      return [1, 2, 3, 4, "ellipsis-end", totalPages];
+    }
+
+    if (currentPage >= totalPages - 2) {
+      return [
+        1,
+        "ellipsis-start",
+        totalPages - 3,
+        totalPages - 2,
+        totalPages - 1,
+        totalPages,
+      ];
+    }
+
+    return [
+      1,
+      "ellipsis-start",
+      currentPage - 1,
+      currentPage,
+      currentPage + 1,
+      "ellipsis-end",
+      totalPages,
+    ];
+  }
+
+  if (currentPage <= 4) {
+    return [1, 2, 3, 4, 5, "ellipsis-end", totalPages];
+  }
+
+  if (currentPage >= totalPages - 3) {
+    return [
+      1,
+      "ellipsis-start",
+      totalPages - 4,
+      totalPages - 3,
+      totalPages - 2,
+      totalPages - 1,
+      totalPages,
+    ];
+  }
+
+  return [
+    1,
+    "ellipsis-start",
+    currentPage - 1,
+    currentPage,
+    currentPage + 1,
+    "ellipsis-end",
+    totalPages,
+  ];
+}
+
 export default function Projects({
   username,
   locale = defaultLocale,
@@ -76,6 +145,7 @@ export default function Projects({
   const [selectedCategory, setSelectedCategory] = useState<string>(ALL_CATEGORY);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [maxVisiblePages, setMaxVisiblePages] = useState(5);
 
   // Pagination settings
   const ITEMS_PER_PAGE = 10;
@@ -86,6 +156,25 @@ export default function Projects({
       setLoading(false);
     });
   }, [username]);
+
+  useEffect(() => {
+    const updateVisiblePages = () => {
+      if (window.matchMedia("(min-width: 1024px)").matches) {
+        setMaxVisiblePages(7);
+      } else if (window.matchMedia("(min-width: 640px)").matches) {
+        setMaxVisiblePages(5);
+      } else {
+        setMaxVisiblePages(5);
+      }
+    };
+
+    updateVisiblePages();
+    window.addEventListener("resize", updateVisiblePages);
+
+    return () => {
+      window.removeEventListener("resize", updateVisiblePages);
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -118,6 +207,11 @@ export default function Projects({
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
   const paginatedRepos = filteredRepos.slice(startIndex, endIndex);
+  const paginationItems = getPaginationItems(
+    totalPages,
+    currentPage,
+    maxVisiblePages
+  );
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -211,35 +305,45 @@ export default function Projects({
             {t.showing} {startIndex + 1}-{Math.min(endIndex, filteredRepos.length)} {t.of} {filteredRepos.length} {t.projects}
           </div>
 
-          <div className="flex max-w-full flex-wrap items-center justify-center gap-2">
+          <div className="flex max-w-full items-center justify-center gap-2">
             <button
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
+              className="h-9 min-w-20 px-3 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
             >
               {t.previous}
             </button>
 
-            <div className="flex flex-wrap justify-center gap-1">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`w-8 h-8 text-sm font-medium transition-colors cursor-pointer ${
-                    currentPage === page
-                      ? "bg-black dark:bg-white text-white dark:text-black"
-                      : "border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+            <div className="flex justify-center gap-1">
+              {paginationItems.map((item) =>
+                typeof item === "number" ? (
+                  <button
+                    key={item}
+                    onClick={() => handlePageChange(item)}
+                    className={`h-9 min-w-20 cursor-pointer px-3 text-sm font-medium transition-colors ${
+                      currentPage === item
+                        ? "bg-black text-white dark:bg-white dark:text-black"
+                        : "border-2 border-zinc-200 text-black hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ) : (
+                  <span
+                    key={item}
+                    aria-hidden="true"
+                    className="flex h-9 min-w-20 items-center justify-center px-3 text-sm font-medium text-zinc-500 dark:text-zinc-500"
+                  >
+                    ...
+                  </span>
+                )
+              )}
             </div>
 
             <button
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
+              className="h-9 min-w-20 px-3 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
             >
               {t.next}
             </button>
