@@ -486,12 +486,12 @@ export default function ASCIILogo() {
       ref={ref}
       onPointerMove={updatePointerLight}
       onPointerLeave={dimPointerLight}
-      className="flex min-h-[205px] w-full select-none items-center justify-center overflow-hidden sm:min-h-[325px] md:min-h-[410px] lg:min-h-[490px]"
+      className="mx-auto flex aspect-square w-full max-w-[26rem] select-none items-center justify-center overflow-hidden sm:mx-0 sm:min-h-[325px] sm:max-w-none sm:aspect-auto md:min-h-[410px] lg:min-h-[490px]"
       aria-hidden="true"
     >
       <pre
         ref={preRef}
-        className="font-mono text-[5px] leading-[1.4] text-black dark:text-white sm:text-[8px] md:text-[10px] lg:text-xs whitespace-pre"
+        className="font-mono text-[7.75px] leading-[1.32] text-black dark:text-white sm:text-[8px] sm:leading-[1.4] md:text-[10px] lg:text-xs whitespace-pre"
       >
         {EMPTY_TEXT}
       </pre>
