@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n";
+
 export const BLOG_HERO_BUCKET = "blog-heroes";
 export const MAX_HERO_IMAGE_BYTES = 5 * 1024 * 1024;
 export const MAX_BLOG_EXCERPT_CHARS = 800;
@@ -8,17 +10,19 @@ export const ALLOWED_HERO_IMAGE_TYPES = [
   "image/gif",
 ];
 
-export function formatPostDate(date: string) {
-  return new Intl.DateTimeFormat("en", {
+export function formatPostDate(date: string, locale: Locale = "en") {
+  return new Intl.DateTimeFormat(locale === "sq" ? "sq-AL" : "en", {
     month: "short",
     day: "numeric",
     year: "numeric",
   }).format(new Date(date));
 }
 
-export function getReadingTime(content: string) {
+export function getReadingTime(content: string, locale: Locale = "en") {
   const words = content.trim().split(/\s+/).filter(Boolean).length;
-  return `${Math.max(1, Math.ceil(words / 220))} min read`;
+  return `${Math.max(1, Math.ceil(words / 220))} ${
+    locale === "sq" ? "min lexim" : "min read"
+  }`;
 }
 
 export function stripMarkdownText(content: string) {

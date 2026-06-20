@@ -12,6 +12,8 @@ import {
   getReadingTime,
   stripMarkdownText,
 } from "@/lib/blog-utils";
+import { getDictionary, getLocalizedPost } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 import { siteName, siteUrl } from "@/lib/site";
 
 export async function generateMetadata({
@@ -20,18 +22,21 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const post = await getBlogPostBySlug(slug);
 
   if (!post) {
     return {
-      title: "Post not found",
+      title: t.post.notFound,
     };
   }
 
-  const plainExcerpt = stripMarkdownText(post.excerpt);
+  const localizedPost = getLocalizedPost(post, locale);
+  const plainExcerpt = stripMarkdownText(localizedPost.excerpt);
 
   return {
-    title: post.title,
+    title: localizedPost.title,
     description: plainExcerpt,
     alternates: {
       canonical: `${siteUrl}/blog/${post.slug}`,
@@ -39,14 +44,15 @@ export async function generateMetadata({
     openGraph: {
       type: "article",
       siteName,
-      title: post.title,
+      locale: t.meta.ogLocale,
+      title: localizedPost.title,
       description: plainExcerpt,
       url: `${siteUrl}/blog/${post.slug}`,
       images: post.hero_image_url
         ? [
             {
               url: post.hero_image_url,
-              alt: post.title,
+              alt: localizedPost.title,
             },
           ]
         : undefined,
@@ -56,7 +62,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: post.title,
+      title: localizedPost.title,
       description: plainExcerpt,
       images: post.hero_image_url ? [post.hero_image_url] : undefined,
     },
@@ -69,11 +75,15 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   const post = await getBlogPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
+
+  const localizedPost = getLocalizedPost(post, locale);
 
   return (
     <main className="min-h-screen bg-white pt-24 text-black dark:bg-black dark:text-white">
@@ -85,19 +95,19 @@ export default async function BlogPostPage({
               href="/blog"
               className="mb-8 inline-flex border-2 border-zinc-200 px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
             >
-              Back to blog
+              {t.post.backToBlog}
             </Link>
             <p className="mb-4 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
-              {formatPostDate(post.created_at)} / {getReadingTime(post.content)}
+              {formatPostDate(post.created_at, locale)} / {getReadingTime(localizedPost.content, locale)}
             </p>
             <h1 className="max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
-              {post.title}
+              {localizedPost.title}
             </h1>
             <MarkdownExcerpt className="mt-6 max-w-3xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
-              {post.excerpt}
+              {localizedPost.excerpt}
             </MarkdownExcerpt>
             <p className="mt-5 text-sm font-medium text-zinc-500 dark:text-zinc-500">
-              By {post.author}
+              {t.post.by} {post.author}
             </p>
           </div>
         </header>
@@ -121,7 +131,7 @@ export default async function BlogPostPage({
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeSanitize]}
             >
-              {post.content}
+              {localizedPost.content}
             </ReactMarkdown>
           </div>
         </div>

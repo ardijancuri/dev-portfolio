@@ -1,9 +1,12 @@
 export interface BlogPost {
   id: string;
   title: string;
+  title_sq: string | null;
   slug: string;
   excerpt: string;
+  excerpt_sq: string | null;
   content: string;
+  content_sq: string | null;
   hero_image_path: string;
   hero_image_url: string;
   author: string;
@@ -16,9 +19,12 @@ export type BlogPostSummary = Pick<
   BlogPost,
   | "id"
   | "title"
+  | "title_sq"
   | "slug"
   | "excerpt"
+  | "excerpt_sq"
   | "content"
+  | "content_sq"
   | "hero_image_url"
   | "author"
   | "created_at"

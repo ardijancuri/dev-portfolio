@@ -1,14 +1,20 @@
 import Link from "next/link";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import ThemeToggle from "@/components/ThemeToggle";
+import { getDictionary } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 
-export default function SiteHeader() {
+export default async function SiteHeader() {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 px-4 py-4 backdrop-blur dark:bg-black/90 sm:px-6 md:px-8 lg:px-12">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 sm:gap-6">
         <Link
           href="/"
           className="text-black transition-opacity hover:opacity-70 dark:text-white"
-          aria-label="Ardijan Curi home"
+          aria-label={t.nav.home}
         >
           <svg
             className="h-8 w-9 sm:h-11 sm:w-12"
@@ -20,22 +26,29 @@ export default function SiteHeader() {
           </svg>
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-5">
-          <nav className="flex items-center gap-4 text-sm font-medium text-zinc-600 dark:text-zinc-400 sm:text-base">
+        <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
+          <nav className="flex items-center gap-4 text-sm font-medium text-zinc-600 dark:text-zinc-400 sm:gap-6 sm:text-base lg:gap-8">
             <Link
               href="/blog"
               className="transition-colors hover:text-black dark:hover:text-white"
             >
-              Blog
+              {t.nav.blog}
             </Link>
             <Link
               href="/#projects"
               className="transition-colors hover:text-black dark:hover:text-white"
             >
-              Projects
+              {t.nav.projects}
             </Link>
           </nav>
-          <ThemeToggle />
+          <div className="flex items-center gap-4">
+            <LanguageSwitcher
+              locale={locale}
+              labels={{ en: t.nav.english, sq: t.nav.albanian }}
+              ariaLabel={t.nav.language}
+            />
+            <ThemeToggle label={t.theme.toggle} />
+          </div>
         </div>
       </div>
     </header>

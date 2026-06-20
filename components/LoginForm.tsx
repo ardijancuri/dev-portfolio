@@ -2,11 +2,19 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 import { hasSupabaseEnv } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
 
-export default function LoginForm({ redirectTo }: { redirectTo: string }) {
+export default function LoginForm({
+  redirectTo,
+  locale = defaultLocale,
+}: {
+  redirectTo: string;
+  locale?: Locale;
+}) {
   const router = useRouter();
+  const t = getDictionary(locale).login;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -21,7 +29,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
     setError(null);
 
     if (!hasSupabaseEnv()) {
-      setError("Supabase environment variables are not configured.");
+      setError(t.supabaseMissing);
       return;
     }
 
@@ -36,7 +44,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
         });
 
       if (signInError || !data.user) {
-        setError(signInError?.message ?? "Unable to sign in.");
+        setError(signInError?.message ?? t.unable);
         return;
       }
 
@@ -48,7 +56,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
 
       if (adminError || !admin) {
         await supabase.auth.signOut();
-        setError("This account is not approved for blog publishing.");
+        setError(t.notAdmin);
         return;
       }
 
@@ -66,7 +74,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
           htmlFor="email"
           className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
         >
-          Email
+          {t.email}
         </label>
         <input
           id="email"
@@ -84,7 +92,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
           htmlFor="password"
           className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
         >
-          Password
+          {t.password}
         </label>
         <input
           id="password"
@@ -108,7 +116,7 @@ export default function LoginForm({ redirectTo }: { redirectTo: string }) {
         disabled={loading}
         className="w-full bg-black px-5 py-3 font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
       >
-        {loading ? "Signing in..." : "Sign in"}
+        {loading ? t.signingIn : t.signIn}
       </button>
     </form>
   );

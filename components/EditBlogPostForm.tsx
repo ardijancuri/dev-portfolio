@@ -7,14 +7,22 @@ import {
 } from "@/app/admin/blog/actions";
 import type { BlogPost } from "@/lib/blog-types";
 import { MAX_BLOG_EXCERPT_CHARS } from "@/lib/blog-utils";
+import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 
 const initialState: EditBlogPostState = {};
 
-export default function EditBlogPostForm({ post }: { post: BlogPost }) {
+export default function EditBlogPostForm({
+  post,
+  locale = defaultLocale,
+}: {
+  post: BlogPost;
+  locale?: Locale;
+}) {
   const [state, formAction, pending] = useActionState(
     updateBlogPost,
     initialState
   );
+  const t = getDictionary(locale).admin;
   const [previewUrl, setPreviewUrl] = useState(post.hero_image_url);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
 
@@ -37,12 +45,18 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
       <input type="hidden" name="id" value={post.id} />
 
       <div className="space-y-6">
+        <div className="border-b border-zinc-200 pb-3 dark:border-zinc-800">
+          <p className="text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
+            {t.form.englishSection}
+          </p>
+        </div>
+
         <div>
           <label
             htmlFor="title"
             className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Title
+            {t.form.title}
           </label>
           <input
             id="title"
@@ -61,7 +75,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             htmlFor="excerpt"
             className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Excerpt
+            {t.form.excerpt}
           </label>
           <textarea
             id="excerpt"
@@ -74,7 +88,8 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             className="w-full resize-y border-2 border-zinc-200 bg-white px-4 py-3 text-black outline-none transition-colors focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:focus:border-white"
           />
           <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-            Markdown links are supported. Max {MAX_BLOG_EXCERPT_CHARS} characters.
+            {t.form.markdownHelp} {MAX_BLOG_EXCERPT_CHARS}{" "}
+            {t.form.characters}
           </p>
         </div>
 
@@ -83,7 +98,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             htmlFor="content"
             className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Markdown content
+            {t.form.content}
           </label>
           <textarea
             id="content"
@@ -95,6 +110,72 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             className="w-full resize-y border-2 border-zinc-200 bg-white px-4 py-3 font-mono text-sm leading-relaxed text-black outline-none transition-colors focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:focus:border-white"
           />
         </div>
+
+        <div className="border-b border-zinc-200 pb-3 pt-4 dark:border-zinc-800">
+          <p className="text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
+            {t.form.albanianSection}
+          </p>
+          <p className="mt-2 text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
+            {t.form.albanianHelp}
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="title_sq"
+            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            {t.form.albanianTitle}
+          </label>
+          <input
+            id="title_sq"
+            name="title_sq"
+            type="text"
+            minLength={3}
+            maxLength={160}
+            defaultValue={post.title_sq ?? ""}
+            className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-black outline-none transition-colors focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:focus:border-white"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="excerpt_sq"
+            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            {t.form.albanianExcerpt}
+          </label>
+          <textarea
+            id="excerpt_sq"
+            name="excerpt_sq"
+            minLength={10}
+            maxLength={MAX_BLOG_EXCERPT_CHARS}
+            rows={6}
+            defaultValue={post.excerpt_sq ?? ""}
+            className="w-full resize-y border-2 border-zinc-200 bg-white px-4 py-3 text-black outline-none transition-colors focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:focus:border-white"
+          />
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+            {t.form.markdownHelp} {MAX_BLOG_EXCERPT_CHARS}{" "}
+            {t.form.characters}
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="content_sq"
+            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            {t.form.albanianContent}
+          </label>
+          <textarea
+            id="content_sq"
+            name="content_sq"
+            minLength={20}
+            rows={18}
+            defaultValue={post.content_sq ?? ""}
+            className="w-full resize-y border-2 border-zinc-200 bg-white px-4 py-3 font-mono text-sm leading-relaxed text-black outline-none transition-colors focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:focus:border-white"
+          />
+        </div>
       </div>
 
       <aside className="space-y-6">
@@ -103,7 +184,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             htmlFor="author"
             className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Author
+            {t.form.author}
           </label>
           <input
             id="author"
@@ -120,7 +201,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             htmlFor="heroImage"
             className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            Replace hero image
+            {t.form.replaceHeroImage}
           </label>
           <input
             id="heroImage"
@@ -133,8 +214,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
           />
           <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-            Leave empty to keep the current image. JPG, PNG, WebP, or GIF. Max
-            5 MB.
+            {t.form.replaceHeroHelp}
           </p>
         </div>
 
@@ -148,7 +228,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
             />
           ) : (
             <div className="flex h-full items-center justify-center text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-              Preview
+              {t.form.preview}
             </div>
           )}
         </div>
@@ -164,7 +244,7 @@ export default function EditBlogPostForm({ post }: { post: BlogPost }) {
           disabled={pending}
           className="w-full bg-black px-5 py-3 font-medium text-white transition-colors hover:bg-zinc-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-white dark:text-black dark:hover:bg-zinc-200"
         >
-          {pending ? "Saving..." : "Save changes"}
+          {pending ? t.form.saving : t.form.save}
         </button>
       </aside>
     </form>

@@ -27,7 +27,7 @@ function subscribeToThemeChanges(onStoreChange: () => void) {
   };
 }
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ label = "Toggle theme" }: { label?: string }) {
   const dark = useSyncExternalStore(
     subscribeToThemeChanges,
     readDarkPreference,
@@ -45,7 +45,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       className="w-10 h-10 flex items-center justify-center text-black dark:text-white hover:text-zinc-600 dark:hover:text-zinc-400 transition-colors cursor-pointer"
-      aria-label="Toggle theme"
+      aria-label={label}
     >
       {dark ? (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

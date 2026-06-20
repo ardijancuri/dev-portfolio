@@ -1,10 +1,40 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Projects from "@/components/Projects";
 import ASCIILogo from "@/components/ASCIILogo";
 import BlogSlider from "@/components/BlogSlider";
 import SiteHeader from "@/components/SiteHeader";
+import { getDictionary } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
+import { siteUrl } from "@/lib/site";
 
-export default function Home() {
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
+  return {
+    title: t.meta.homeTitle,
+    description: t.meta.homeDescription,
+    alternates: {
+      canonical: siteUrl,
+    },
+    openGraph: {
+      locale: t.meta.ogLocale,
+      title: t.meta.homeTitle,
+      description: t.meta.homeDescription,
+      url: siteUrl,
+    },
+    twitter: {
+      title: t.meta.homeTitle,
+      description: t.meta.homeDescription,
+    },
+  };
+}
+
+export default async function Home() {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
   return (
     <main className="min-h-screen bg-white dark:bg-black">
       <SiteHeader />
@@ -20,18 +50,12 @@ export default function Home() {
                 Ardijan Curi
               </h1>
               <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl text-zinc-600 dark:text-zinc-400">
-                Co-Founder & Software Engineer <br></br> Building Digital Products at <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="text-black dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors underline decoration-2 underline-offset-4">Oninova</a>
+                {t.home.role} <br></br> {t.home.buildingAt} <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="text-black dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors underline decoration-2 underline-offset-4">Oninova</a>
               </p>
               <div className="text-sm sm:text-base md:text-sm lg:text-base text-zinc-500 dark:text-zinc-500 leading-relaxed space-y-4">
-                <p>
-                  Co-founder of Oninova, a software development and marketing agency helping businesses grow through digital products and performance-driven campaigns.
-                </p>
-                <p>
-                  I lead the technical side — architecture, backend, and frontend. Turning business requirements into clean, scalable software.
-                </p>
-                <p>
-                  We bring together engineering and marketing to drive measurable results through custom software, automation, and data-informed strategies.
-                </p>
+                {t.home.bio.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
               </div>
               {/* Social Links */}
               <div className="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 text-sm sm:text-base">
@@ -99,20 +123,20 @@ export default function Home() {
           <div className="mb-8 sm:mb-12 md:mb-16 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="mb-3 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
-                Blog
+                {t.home.blogEyebrow}
               </p>
               <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white">
-                Latest writing
+                {t.home.blogTitle}
               </h2>
             </div>
             <Link
               href="/blog"
               className="w-fit border-2 border-zinc-200 px-5 py-3 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
             >
-              View all posts
+              {t.home.viewAllPosts}
             </Link>
           </div>
-          <BlogSlider />
+          <BlogSlider locale={locale} />
         </div>
       </section>
 
@@ -120,16 +144,16 @@ export default function Home() {
       <section id="projects" className="min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
         <div className="max-w-5xl mx-auto">
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white mb-8 sm:mb-12 md:mb-16">
-            Projects
+            {t.home.projectsTitle}
           </h2>
-          <Projects username="ardijancuri" />
+          <Projects username="ardijancuri" locale={locale} />
         </div>
       </section>
 
       {/* Footer */}
       <footer className="px-4 sm:px-6 md:px-8 lg:px-12 py-8 sm:py-10 md:py-12 border-t border-zinc-200 dark:border-zinc-800">
         <div className="max-w-5xl mx-auto text-center text-sm sm:text-base text-zinc-500 dark:text-zinc-500">
-          <p>&copy; {new Date().getFullYear()} Ardijan Curi. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Ardijan Curi. {t.home.footerRights}</p>
         </div>
       </footer>
     </main>

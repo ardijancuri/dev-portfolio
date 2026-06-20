@@ -6,14 +6,21 @@ import LogoutButton from "@/components/LogoutButton";
 import SiteHeader from "@/components/SiteHeader";
 import { requireAdmin } from "@/lib/admin";
 import { getBlogPostById } from "@/lib/blog";
+import { getDictionary } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 
-export const metadata: Metadata = {
-  title: "Edit Blog Post",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
+  return {
+    title: t.admin.editMetaTitle,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function EditBlogPostPage({
   params,
@@ -21,6 +28,8 @@ export default async function EditBlogPostPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   await requireAdmin(`/admin/blog/${id}/edit`);
 
   const post = await getBlogPostById(id);
@@ -36,10 +45,10 @@ export default async function EditBlogPostPage({
         <div className="mb-10 flex flex-col justify-between gap-5 border-b border-zinc-200 pb-8 dark:border-zinc-800 sm:flex-row sm:items-end">
           <div>
             <p className="mb-4 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
-              Admin
+              {t.admin.eyebrow}
             </p>
             <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
-              Edit post
+              {t.admin.editPostHeading}
             </h1>
             <p className="mt-4 max-w-2xl truncate font-mono text-xs text-zinc-500 dark:text-zinc-500">
               /blog/{post.slug}
@@ -50,13 +59,13 @@ export default async function EditBlogPostPage({
               href="/admin/blog"
               className="border-2 border-zinc-200 px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
             >
-              Manage posts
+              {t.admin.managePosts}
             </Link>
-            <LogoutButton />
+            <LogoutButton label={t.admin.signOut} />
           </div>
         </div>
 
-        <EditBlogPostForm post={post} />
+        <EditBlogPostForm post={post} locale={locale} />
       </section>
     </main>
   );

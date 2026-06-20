@@ -10,9 +10,12 @@ create table if not exists public.admin_users (
 create table if not exists public.blog_posts (
   id uuid primary key default gen_random_uuid(),
   title text not null check (char_length(trim(title)) between 3 and 160),
+  title_sq text check (title_sq is null or char_length(trim(title_sq)) between 3 and 160),
   slug text not null unique check (slug ~ '^[a-z0-9]+(?:-[a-z0-9]+)*$'),
   excerpt text not null check (char_length(trim(excerpt)) between 10 and 800),
+  excerpt_sq text check (excerpt_sq is null or char_length(trim(excerpt_sq)) between 10 and 800),
   content text not null check (char_length(trim(content)) >= 20),
+  content_sq text check (content_sq is null or char_length(trim(content_sq)) >= 20),
   hero_image_path text not null,
   hero_image_url text not null,
   author text not null default 'Ardijan Curi',
@@ -22,9 +25,29 @@ create table if not exists public.blog_posts (
 );
 
 alter table public.blog_posts
+  add column if not exists title_sq text,
+  add column if not exists excerpt_sq text,
+  add column if not exists content_sq text;
+
+alter table public.blog_posts
   drop constraint if exists blog_posts_excerpt_check,
   add constraint blog_posts_excerpt_check
   check (char_length(trim(excerpt)) between 10 and 800);
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_title_sq_check,
+  add constraint blog_posts_title_sq_check
+  check (title_sq is null or char_length(trim(title_sq)) between 3 and 160);
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_excerpt_sq_check,
+  add constraint blog_posts_excerpt_sq_check
+  check (excerpt_sq is null or char_length(trim(excerpt_sq)) between 10 and 800);
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_content_sq_check,
+  add constraint blog_posts_content_sq_check
+  check (content_sq is null or char_length(trim(content_sq)) >= 20);
 
 create index if not exists blog_posts_created_at_idx
   on public.blog_posts (created_at desc);

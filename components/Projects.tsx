@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 
 interface GitHubRepo {
   id: number;
@@ -61,9 +62,18 @@ const languageColors: { [key: string]: string } = {
   "C#": "bg-green-600 dark:bg-green-700",
 };
 
-export default function Projects({ username }: { username: string }) {
+const ALL_CATEGORY = "__all__";
+
+export default function Projects({
+  username,
+  locale = defaultLocale,
+}: {
+  username: string;
+  locale?: Locale;
+}) {
+  const t = getDictionary(locale).projects;
   const [repos, setRepos] = useState<GitHubRepo[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [selectedCategory, setSelectedCategory] = useState<string>(ALL_CATEGORY);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -80,7 +90,7 @@ export default function Projects({ username }: { username: string }) {
   if (loading) {
     return (
       <div className="text-zinc-500 dark:text-zinc-500">
-        Loading projects...
+        {t.loading}
       </div>
     );
   }
@@ -88,18 +98,18 @@ export default function Projects({ username }: { username: string }) {
   if (repos.length === 0) {
     return (
       <div className="text-zinc-500 dark:text-zinc-500">
-        No projects found or unable to fetch repositories.
+        {t.empty}
       </div>
     );
   }
 
   // Get unique languages for categorization
   const languages = Array.from(new Set(repos.map((repo) => repo.language).filter((lang): lang is string => Boolean(lang))));
-  const categories = ["All", ...languages];
+  const categories = [ALL_CATEGORY, ...languages];
 
   // Filter repos by selected category
   const filteredRepos =
-    selectedCategory === "All"
+    selectedCategory === ALL_CATEGORY
       ? repos
       : repos.filter((repo) => repo.language === selectedCategory);
 
@@ -134,7 +144,7 @@ export default function Projects({ username }: { username: string }) {
                     : "bg-zinc-100 dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-800 active:bg-zinc-300 dark:active:bg-zinc-700"
                 }`}
               >
-                {category || "Unknown"} ({selectedCategory === category ? filteredRepos.length : category === "All" ? repos.length : repos.filter(r => r.language === category).length})
+                {category === ALL_CATEGORY ? t.all : category || t.unknown} ({selectedCategory === category ? filteredRepos.length : category === ALL_CATEGORY ? repos.length : repos.filter(r => r.language === category).length})
               </button>
             ))}
           </div>
@@ -190,7 +200,7 @@ export default function Projects({ username }: { username: string }) {
 
       {filteredRepos.length === 0 && (
         <div className="text-center text-zinc-500 dark:text-zinc-500 py-8 sm:py-10 md:py-12 text-sm sm:text-base">
-          No projects found in this category.
+          {t.emptyCategory}
         </div>
       )}
 
@@ -198,7 +208,7 @@ export default function Projects({ username }: { username: string }) {
       {totalPages > 1 && (
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-zinc-200 dark:border-zinc-800">
           <div className="text-sm text-zinc-500 dark:text-zinc-500">
-            Showing {startIndex + 1}-{Math.min(endIndex, filteredRepos.length)} of {filteredRepos.length} projects
+            {t.showing} {startIndex + 1}-{Math.min(endIndex, filteredRepos.length)} {t.of} {filteredRepos.length} {t.projects}
           </div>
 
           <div className="flex max-w-full flex-wrap items-center justify-center gap-2">
@@ -207,7 +217,7 @@ export default function Projects({ username }: { username: string }) {
               disabled={currentPage === 1}
               className="px-3 py-1.5 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
             >
-              Previous
+              {t.previous}
             </button>
 
             <div className="flex flex-wrap justify-center gap-1">
@@ -231,7 +241,7 @@ export default function Projects({ username }: { username: string }) {
               disabled={currentPage === totalPages}
               className="px-3 py-1.5 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
             >
-              Next
+              {t.next}
             </button>
           </div>
         </div>

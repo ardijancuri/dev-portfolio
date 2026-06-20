@@ -4,16 +4,25 @@ import AdminBlogForm from "@/components/AdminBlogForm";
 import LogoutButton from "@/components/LogoutButton";
 import SiteHeader from "@/components/SiteHeader";
 import { requireAdmin } from "@/lib/admin";
+import { getDictionary } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 
-export const metadata: Metadata = {
-  title: "New Blog Post",
-  robots: {
-    index: false,
-    follow: false,
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
+
+  return {
+    title: t.admin.newMetaTitle,
+    robots: {
+      index: false,
+      follow: false,
+    },
+  };
+}
 
 export default async function NewBlogPostPage() {
+  const locale = await getLocale();
+  const t = getDictionary(locale);
   await requireAdmin("/admin/blog/new");
 
   return (
@@ -23,10 +32,10 @@ export default async function NewBlogPostPage() {
         <div className="mb-10 flex flex-col justify-between gap-5 border-b border-zinc-200 pb-8 dark:border-zinc-800 sm:flex-row sm:items-end">
           <div>
             <p className="mb-4 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
-              Admin
+              {t.admin.eyebrow}
             </p>
             <h1 className="text-4xl font-bold leading-tight sm:text-5xl">
-              New blog post
+              {t.admin.newPostHeading}
             </h1>
           </div>
           <div className="flex flex-wrap items-center gap-3">
@@ -34,13 +43,13 @@ export default async function NewBlogPostPage() {
               href="/admin/blog"
               className="border-2 border-zinc-200 px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
             >
-              Manage posts
+              {t.admin.managePosts}
             </Link>
-            <LogoutButton />
+            <LogoutButton label={t.admin.signOut} />
           </div>
         </div>
 
-        <AdminBlogForm />
+        <AdminBlogForm locale={locale} />
       </section>
     </main>
   );

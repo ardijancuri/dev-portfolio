@@ -12,9 +12,52 @@ import {
   extensionForMimeType,
   slugifyTitle,
 } from "@/lib/blog-utils";
+import { getDictionary } from "@/lib/i18n";
+import { getLocale } from "@/lib/i18n-server";
 
 export interface CreateBlogPostState {
   error?: string;
+}
+
+function optionalField(formData: FormData, key: string) {
+  const value = String(formData.get(key) ?? "").trim();
+  return value.length > 0 ? value : null;
+}
+
+function validateAlbanianFields({
+  titleSq,
+  excerptSq,
+  contentSq,
+  errors,
+}: {
+  titleSq: string | null;
+  excerptSq: string | null;
+  contentSq: string | null;
+  errors: ReturnType<typeof getDictionary>["admin"]["errors"];
+}) {
+  const hasAnyTranslation = Boolean(titleSq || excerptSq || contentSq);
+
+  if (!hasAnyTranslation) {
+    return null;
+  }
+
+  if (!titleSq || !excerptSq || !contentSq) {
+    return errors.translationIncomplete;
+  }
+
+  if (titleSq.length < 3 || titleSq.length > 160) {
+    return errors.albanianTitleLength;
+  }
+
+  if (excerptSq.length < 10 || excerptSq.length > MAX_BLOG_EXCERPT_CHARS) {
+    return `${errors.albanianExcerptLength} ${MAX_BLOG_EXCERPT_CHARS} ${errors.excerptLengthEnd}`;
+  }
+
+  if (contentSq.length < 20) {
+    return errors.albanianContentLength;
+  }
+
+  return null;
 }
 
 export async function createBlogPost(
@@ -22,41 +65,57 @@ export async function createBlogPost(
   formData: FormData
 ): Promise<CreateBlogPostState> {
   const { supabase, userId } = await requireAdmin("/admin/blog/new");
+  const locale = await getLocale();
+  const errors = getDictionary(locale).admin.errors;
 
   const title = String(formData.get("title") ?? "").trim();
+  const titleSq = optionalField(formData, "title_sq");
   const excerpt = String(formData.get("excerpt") ?? "").trim();
+  const excerptSq = optionalField(formData, "excerpt_sq");
   const content = String(formData.get("content") ?? "").trim();
+  const contentSq = optionalField(formData, "content_sq");
   const author = String(formData.get("author") ?? defaultAuthor).trim();
   const heroImage = formData.get("heroImage");
 
   if (title.length < 3 || title.length > 160) {
-    return { error: "Title must be between 3 and 160 characters." };
+    return { error: errors.titleLength };
   }
 
   if (excerpt.length < 10 || excerpt.length > MAX_BLOG_EXCERPT_CHARS) {
     return {
-      error: `Excerpt must be between 10 and ${MAX_BLOG_EXCERPT_CHARS} characters.`,
+      error: `${errors.excerptLength} ${MAX_BLOG_EXCERPT_CHARS} ${errors.excerptLengthEnd}`,
     };
   }
 
   if (content.length < 20) {
-    return { error: "Markdown content must be at least 20 characters." };
+    return { error: errors.contentLength };
   }
 
   if (!author) {
-    return { error: "Author is required." };
+    return { error: errors.authorRequired };
+  }
+
+  const translationError = validateAlbanianFields({
+    titleSq,
+    excerptSq,
+    contentSq,
+    errors,
+  });
+
+  if (translationError) {
+    return { error: translationError };
   }
 
   if (!(heroImage instanceof File) || heroImage.size === 0) {
-    return { error: "Hero image is required." };
+    return { error: errors.heroRequired };
   }
 
   if (!ALLOWED_HERO_IMAGE_TYPES.includes(heroImage.type)) {
-    return { error: "Hero image must be a JPG, PNG, WebP, or GIF file." };
+    return { error: errors.heroType };
   }
 
   if (heroImage.size > MAX_HERO_IMAGE_BYTES) {
-    return { error: "Hero image must be 5 MB or smaller." };
+    return { error: errors.heroSize };
   }
 
   let slug = slugifyTitle(title);
@@ -78,7 +137,7 @@ export async function createBlogPost(
   const extension = extensionForMimeType(heroImage.type);
 
   if (!extension) {
-    return { error: "Unsupported hero image file type." };
+    return { error: errors.heroUnsupported };
   }
 
   const heroPath = `${userId}/${Date.now()}-${slug}.${extension}`;
@@ -100,9 +159,12 @@ export async function createBlogPost(
 
   const { error: insertError } = await supabase.from("blog_posts").insert({
     title,
+    title_sq: titleSq,
     slug,
     excerpt,
+    excerpt_sq: excerptSq,
     content,
+    content_sq: contentSq,
     hero_image_path: heroPath,
     hero_image_url: publicUrl,
     author,

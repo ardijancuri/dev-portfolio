@@ -3,15 +3,19 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { deleteBlogPost } from "@/app/admin/blog/actions";
+import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 
 export default function DeleteBlogPostButton({
   postId,
   title,
+  locale = defaultLocale,
 }: {
   postId: string;
   title: string;
+  locale?: Locale;
 }) {
   const router = useRouter();
+  const t = getDictionary(locale).admin;
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
 
@@ -20,7 +24,7 @@ export default function DeleteBlogPostButton({
 
     if (
       !window.confirm(
-        `Delete "${title}"? This removes the post and its hero image.`
+        `${t.deleteConfirmStart} "${title}"? ${t.deleteConfirmEnd}`
       )
     ) {
       return;
@@ -46,7 +50,7 @@ export default function DeleteBlogPostButton({
         disabled={pending}
         className="w-full border-2 border-zinc-200 px-4 py-2 text-sm font-medium text-red-600 transition-colors hover:border-red-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-800 dark:text-red-400 dark:hover:border-red-400 sm:w-auto"
       >
-        {pending ? "Deleting..." : "Delete"}
+        {pending ? t.deleting : t.delete}
       </button>
       {error && (
         <p className="max-w-52 text-xs leading-relaxed text-red-600 dark:text-red-400">
