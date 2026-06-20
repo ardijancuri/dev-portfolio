@@ -305,16 +305,8 @@ export default function Projects({
             {t.showing} {startIndex + 1}-{Math.min(endIndex, filteredRepos.length)} {t.of} {filteredRepos.length} {t.projects}
           </div>
 
-          <div className="flex max-w-full items-center justify-center gap-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="h-9 min-w-20 px-3 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
-            >
-              {t.previous}
-            </button>
-
-            <div className="flex justify-center gap-1">
+          <div className="flex w-full max-w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row sm:gap-2">
+            <div className="order-1 flex justify-center gap-1 sm:order-2">
               {paginationItems.map((item) =>
                 typeof item === "number" ? (
                   <button
@@ -340,13 +332,23 @@ export default function Projects({
               )}
             </div>
 
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="h-9 min-w-20 px-3 text-sm font-medium border-2 border-zinc-200 dark:border-zinc-800 text-black dark:text-white hover:border-black dark:hover:border-white disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-zinc-200 dark:disabled:hover:border-zinc-800 transition-colors cursor-pointer"
-            >
-              {t.next}
-            </button>
+            <div className="order-2 flex justify-center gap-2 sm:contents">
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className="h-9 min-w-20 cursor-pointer border-2 border-zinc-200 px-3 text-sm font-medium text-black transition-colors hover:border-black disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-zinc-200 dark:border-zinc-800 dark:text-white dark:hover:border-white dark:disabled:hover:border-zinc-800 sm:order-1"
+              >
+                {t.previous}
+              </button>
+
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className="h-9 min-w-20 cursor-pointer border-2 border-zinc-200 px-3 text-sm font-medium text-black transition-colors hover:border-black disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-zinc-200 dark:border-zinc-800 dark:text-white dark:hover:border-white dark:disabled:hover:border-zinc-800 sm:order-3"
+              >
+                {t.next}
+              </button>
+            </div>
           </div>
         </div>
       )}
