@@ -20,6 +20,14 @@ export function getReadingTime(content: string) {
   return `${Math.max(1, Math.ceil(words / 220))} min read`;
 }
 
+export function stripMarkdownText(content: string) {
+  return content
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
+    .replace(/[`*_~>#]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 export function slugifyTitle(title: string) {
   return title
     .toLowerCase()

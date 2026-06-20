@@ -5,9 +5,14 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
+import MarkdownExcerpt from "@/components/MarkdownExcerpt";
 import SiteHeader from "@/components/SiteHeader";
 import { getBlogPostBySlug } from "@/lib/blog";
-import { formatPostDate, getReadingTime } from "@/lib/blog-utils";
+import {
+  formatPostDate,
+  getReadingTime,
+  stripMarkdownText,
+} from "@/lib/blog-utils";
 import { siteName, siteUrl } from "@/lib/site";
 
 export async function generateMetadata({
@@ -24,9 +29,11 @@ export async function generateMetadata({
     };
   }
 
+  const plainExcerpt = stripMarkdownText(post.excerpt);
+
   return {
     title: post.title,
-    description: post.excerpt,
+    description: plainExcerpt,
     alternates: {
       canonical: `${siteUrl}/blog/${post.slug}`,
     },
@@ -34,7 +41,7 @@ export async function generateMetadata({
       type: "article",
       siteName,
       title: post.title,
-      description: post.excerpt,
+      description: plainExcerpt,
       url: `${siteUrl}/blog/${post.slug}`,
       images: post.hero_image_url
         ? [
@@ -51,7 +58,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.excerpt,
+      description: plainExcerpt,
       images: post.hero_image_url ? [post.hero_image_url] : undefined,
     },
   };
@@ -87,9 +94,9 @@ export default async function BlogPostPage({
             <h1 className="max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
               {post.title}
             </h1>
-            <p className="mt-6 max-w-3xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
+            <MarkdownExcerpt className="mt-6 max-w-3xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
               {post.excerpt}
-            </p>
+            </MarkdownExcerpt>
             <p className="mt-5 text-sm font-medium text-zinc-500 dark:text-zinc-500">
               By {post.author}
             </p>

@@ -103,6 +103,34 @@ body {
   color: rgb(255 255 255);
 }
 
+.markdown-excerpt p {
+  margin: 0;
+}
+
+.markdown-excerpt > * + * {
+  margin-top: 0.5rem;
+}
+
+.markdown-excerpt a {
+  color: rgb(0 0 0);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  transition: color 150ms ease;
+}
+
+.markdown-excerpt a:hover {
+  color: rgb(82 82 91);
+}
+
+.dark .markdown-excerpt a {
+  color: rgb(255 255 255);
+}
+
+.dark .markdown-excerpt a:hover {
+  color: rgb(212 212 216);
+}
+
 .blog-markdown ul,
 .blog-markdown ol {
   padding-left: 1.35rem;

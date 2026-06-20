@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import DeleteBlogPostButton from "@/components/DeleteBlogPostButton";
 import LogoutButton from "@/components/LogoutButton";
+import MarkdownExcerpt from "@/components/MarkdownExcerpt";
 import SiteHeader from "@/components/SiteHeader";
 import { requireAdmin } from "@/lib/admin";
 import { getBlogPosts } from "@/lib/blog";
@@ -79,9 +80,9 @@ export default async function AdminBlogPage() {
                   <h2 className="text-2xl font-bold leading-tight">
                     {post.title}
                   </h2>
-                  <p className="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-base">
+                  <MarkdownExcerpt className="mt-3 max-w-3xl text-sm leading-relaxed text-zinc-600 dark:text-zinc-400 sm:text-base">
                     {post.excerpt}
-                  </p>
+                  </MarkdownExcerpt>
                   <p className="mt-3 truncate font-mono text-xs text-zinc-500 dark:text-zinc-500">
                     /blog/{post.slug}
                   </p>
