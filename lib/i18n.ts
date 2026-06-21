@@ -182,7 +182,7 @@ export const dictionaries = {
       buildingAt: "Ndërtoj produkte digjitale te",
       bio: [
         "Bashkëthemelues i Oninova, një agjenci për zhvillim softueri dhe marketing që ndihmon bizneset të rriten përmes produkteve digjitale dhe fushatave të orientuara nga performanca.",
-        "Udhëheq anën teknike - arkitekturën, backend-in dhe frontend-in. I kthej kërkesat e biznesit në softuer të pastër dhe të shkallëzueshëm.",
+        "Un udhëheq anën teknike - arkitekturën, backend-in dhe frontend-in. I kthej kërkesat e biznesit në softuer të pastër dhe të shkallëzueshëm.",
         "Bashkojmë inxhinierinë dhe marketingun për të sjellë rezultate të matshme përmes softuerit të personalizuar, automatizimit dhe strategjive të bazuara në të dhëna.",
       ],
       blogEyebrow: "Blogu",

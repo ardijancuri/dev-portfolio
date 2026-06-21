@@ -103,7 +103,7 @@ export default async function BlogPostPage({
                 {formatPostDate(post.created_at, locale)} /{" "}
                 {getReadingTime(localizedPost.content, locale)}
               </p>
-              <h1 className="max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-6xl lg:text-7xl">
+              <h1 className="max-w-4xl text-4xl font-bold leading-[1.1] sm:text-5xl md:text-6xl lg:text-7xl">
                 {localizedPost.title}
               </h1>
               <MarkdownExcerpt className="mt-6 max-w-3xl text-lg leading-relaxed text-zinc-600 dark:text-zinc-400">
