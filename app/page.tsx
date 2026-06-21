@@ -7,7 +7,7 @@ import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
 import { getDictionary } from "@/lib/i18n";
 import { getLocale } from "@/lib/i18n-server";
-import { siteUrl } from "@/lib/site";
+import { homepageSeoImage, siteUrl } from "@/lib/site";
 
 export async function generateMetadata(): Promise<Metadata> {
   const locale = await getLocale();
@@ -24,10 +24,18 @@ export async function generateMetadata(): Promise<Metadata> {
       title: t.meta.homeTitle,
       description: t.meta.homeDescription,
       url: siteUrl,
+      images: [
+        {
+          url: homepageSeoImage,
+          alt: "Ardijan Curi",
+        },
+      ],
     },
     twitter: {
+      card: "summary",
       title: t.meta.homeTitle,
       description: t.meta.homeDescription,
+      images: [homepageSeoImage],
     },
   };
 }
