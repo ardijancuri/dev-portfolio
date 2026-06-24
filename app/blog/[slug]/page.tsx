@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
+import BlogHeroMedia from "@/components/BlogHeroMedia";
 import MarkdownExcerpt from "@/components/MarkdownExcerpt";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
@@ -116,16 +117,10 @@ export default async function BlogPostPage({
           </header>
 
           <div className="px-4 sm:px-6 md:px-8 lg:px-12">
-            <figure className="mx-auto max-w-5xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={post.hero_image_url}
-                alt=""
-                loading="eager"
-                decoding="async"
-                className="h-auto w-full"
-              />
-            </figure>
+            <BlogHeroMedia
+              src={post.hero_image_url}
+              title={localizedPost.title}
+            />
           </div>
 
           <div className="px-4 py-12 sm:px-6 md:px-8 lg:px-12">

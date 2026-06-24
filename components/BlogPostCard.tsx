@@ -23,6 +23,9 @@ export default function BlogPostCard({
   const localizedPost = getLocalizedPost(post, locale);
   const t = getDictionary(locale);
   const postHref = `/blog/${post.slug}`;
+  const imageSizes = isHomeVariant
+    ? "(min-width: 1280px) 416px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 92vw"
+    : "(min-width: 1536px) 300px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 92vw";
 
   return (
     <article
@@ -42,7 +45,8 @@ export default function BlogPostCard({
             src={post.hero_image_url}
             alt=""
             fill
-            sizes="(min-width: 1536px) 300px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 92vw"
+            sizes={imageSizes}
+            quality={isHomeVariant ? 90 : 75}
             className={
               isHomeVariant
                 ? "object-cover transition-transform duration-500 group-hover:scale-[1.02]"
