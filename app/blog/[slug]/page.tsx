@@ -8,7 +8,7 @@ import BlogHeroMedia from "@/components/BlogHeroMedia";
 import MarkdownExcerpt from "@/components/MarkdownExcerpt";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-import { getBlogPostBySlug } from "@/lib/blog";
+import { getAdjacentBlogPosts, getBlogPostBySlug } from "@/lib/blog";
 import {
   formatPostDate,
   getReadingTime,
@@ -80,12 +80,22 @@ export default async function BlogPostPage({
   const locale = await getLocale();
   const t = getDictionary(locale);
   const post = await getBlogPostBySlug(slug);
+  const adjacentPosts = await getAdjacentBlogPosts(slug);
 
   if (!post) {
     notFound();
   }
 
   const localizedPost = getLocalizedPost(post, locale);
+  const previousPost = adjacentPosts.previous
+    ? getLocalizedPost(adjacentPosts.previous, locale)
+    : null;
+  const nextPost = adjacentPosts.next
+    ? getLocalizedPost(adjacentPosts.next, locale)
+    : null;
+  const hasPreviousAndNext = Boolean(
+    adjacentPosts.previous && adjacentPosts.next,
+  );
 
   return (
     <>
@@ -132,6 +142,49 @@ export default async function BlogPostPage({
                 {localizedPost.content}
               </ReactMarkdown>
             </div>
+
+            {adjacentPosts.previous || adjacentPosts.next ? (
+              <nav
+                aria-label="Adjacent blog posts"
+                className="mx-auto mt-14 grid max-w-3xl gap-6 border-t border-zinc-200 pt-8 dark:border-zinc-800 sm:grid-cols-2 sm:gap-0"
+              >
+                {adjacentPosts.previous && previousPost ? (
+                  <Link
+                    href={`/blog/${adjacentPosts.previous.slug}`}
+                    className={`group flex flex-col text-left transition-colors ${
+                      hasPreviousAndNext ? "sm:pr-8" : ""
+                    }`}
+                  >
+                    <span className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-500">
+                      {t.post.previous}
+                    </span>
+                    <span className="mt-4 text-xl font-bold leading-tight text-black transition-colors group-hover:text-zinc-600 dark:text-white dark:group-hover:text-zinc-400">
+                      {previousPost.title}
+                    </span>
+                  </Link>
+                ) : (
+                  <div className="hidden sm:block" />
+                )}
+
+                {adjacentPosts.next && nextPost ? (
+                  <Link
+                    href={`/blog/${adjacentPosts.next.slug}`}
+                    className={`group flex flex-col text-left transition-colors sm:text-right ${
+                      hasPreviousAndNext
+                        ? "border-t border-zinc-200 pt-6 dark:border-zinc-800 sm:border-l sm:border-t-0 sm:pl-8 sm:pt-0"
+                        : ""
+                    }`}
+                  >
+                    <span className="text-xs font-medium uppercase text-zinc-500 dark:text-zinc-500">
+                      {t.post.next}
+                    </span>
+                    <span className="mt-4 text-xl font-bold leading-tight text-black transition-colors group-hover:text-zinc-600 dark:text-white dark:group-hover:text-zinc-400">
+                      {nextPost.title}
+                    </span>
+                  </Link>
+                ) : null}
+              </nav>
+            ) : null}
           </div>
         </article>
       </main>

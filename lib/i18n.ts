@@ -56,6 +56,8 @@ export const dictionaries = {
       notFound: "Post not found",
       backToBlog: "Back to blog",
       by: "By",
+      previous: "Previous post",
+      next: "Next post",
     },
     projects: {
       loading: "Loading projects...",
@@ -202,6 +204,8 @@ export const dictionaries = {
       notFound: "Postimi nuk u gjet",
       backToBlog: "Kthehu te blogu",
       by: "Nga",
+      previous: "Postimi i meparshem",
+      next: "Postimi i radhes",
     },
     projects: {
       loading: "Duke ngarkuar projektet...",

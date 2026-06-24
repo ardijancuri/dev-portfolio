@@ -31,6 +31,23 @@ export const getBlogPosts = cache(async (limit?: number) => {
   return (data ?? []) as BlogPost[];
 });
 
+export const getAdjacentBlogPosts = cache(async (slug: string) => {
+  const posts = await getBlogPosts();
+  const currentIndex = posts.findIndex((post) => post.slug === slug);
+
+  if (currentIndex === -1) {
+    return {
+      previous: null,
+      next: null,
+    };
+  }
+
+  return {
+    previous: posts[currentIndex - 1] ?? null,
+    next: posts[currentIndex + 1] ?? null,
+  };
+});
+
 export const getBlogPostBySlug = cache(async (slug: string) => {
   if (!hasSupabaseEnv()) {
     return null;
