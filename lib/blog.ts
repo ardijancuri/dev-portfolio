@@ -43,8 +43,8 @@ export const getAdjacentBlogPosts = cache(async (slug: string) => {
   }
 
   return {
-    previous: posts[currentIndex - 1] ?? null,
-    next: posts[currentIndex + 1] ?? null,
+    previous: posts[currentIndex + 1] ?? null,
+    next: posts[currentIndex - 1] ?? null,
   };
 });
 
