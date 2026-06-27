@@ -18,6 +18,8 @@ create table if not exists public.blog_posts (
   content_sq text check (content_sq is null or char_length(trim(content_sq)) >= 20),
   hero_image_path text not null,
   hero_image_url text not null,
+  hero_slider_image_paths text[] not null default '{}',
+  hero_slider_image_urls text[] not null default '{}',
   author text not null default 'Ardijan Curi',
   created_by uuid not null references auth.users(id) on delete restrict,
   created_at timestamptz not null default now(),
@@ -27,7 +29,9 @@ create table if not exists public.blog_posts (
 alter table public.blog_posts
   add column if not exists title_sq text,
   add column if not exists excerpt_sq text,
-  add column if not exists content_sq text;
+  add column if not exists content_sq text,
+  add column if not exists hero_slider_image_paths text[] not null default '{}',
+  add column if not exists hero_slider_image_urls text[] not null default '{}';
 
 alter table public.blog_posts
   drop constraint if exists blog_posts_excerpt_check,
@@ -48,6 +52,21 @@ alter table public.blog_posts
   drop constraint if exists blog_posts_content_sq_check,
   add constraint blog_posts_content_sq_check
   check (content_sq is null or char_length(trim(content_sq)) >= 20);
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_hero_slider_image_paths_count_check,
+  add constraint blog_posts_hero_slider_image_paths_count_check
+  check (cardinality(hero_slider_image_paths) <= 5);
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_hero_slider_image_urls_count_check,
+  add constraint blog_posts_hero_slider_image_urls_count_check
+  check (cardinality(hero_slider_image_urls) <= 5);
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_hero_slider_image_arrays_match_check,
+  add constraint blog_posts_hero_slider_image_arrays_match_check
+  check (cardinality(hero_slider_image_paths) = cardinality(hero_slider_image_urls));
 
 create index if not exists blog_posts_created_at_idx
   on public.blog_posts (created_at desc);

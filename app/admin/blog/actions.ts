@@ -8,6 +8,7 @@ import {
   BLOG_HERO_BUCKET,
   MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_IMAGE_BYTES,
+  MAX_HERO_SLIDER_IMAGES,
   extensionForMimeType,
   slugifyTitle,
 } from "@/lib/blog-utils";
@@ -104,6 +105,14 @@ function optionalField(formData: FormData, key: string) {
   return value.length > 0 ? value : null;
 }
 
+function getHeroSliderImages(formData: FormData) {
+  return formData
+    .getAll("heroSliderImages")
+    .filter(
+      (value): value is File => value instanceof File && value.size > 0
+    );
+}
+
 function revalidateBlogViews(slug: string, previousSlug?: string) {
   revalidatePath("/");
   revalidatePath("/blog");
@@ -131,7 +140,7 @@ export async function deleteBlogPost(
 
   const { data: post, error: loadError } = await supabase
     .from("blog_posts")
-    .select("slug,hero_image_path")
+    .select("slug,hero_image_path,hero_slider_image_paths")
     .eq("id", id)
     .maybeSingle();
 
@@ -152,13 +161,18 @@ export async function deleteBlogPost(
     return { error: deleteError.message };
   }
 
-  if (post.hero_image_path) {
+  const imagePaths = [
+    post.hero_image_path,
+    ...((post.hero_slider_image_paths as string[] | null) ?? []),
+  ].filter(Boolean);
+
+  if (imagePaths.length > 0) {
     const { error: storageError } = await supabase.storage
       .from(BLOG_HERO_BUCKET)
-      .remove([post.hero_image_path]);
+      .remove(imagePaths);
 
     if (storageError) {
-      console.warn("Unable to remove deleted post hero image:", storageError);
+      console.warn("Unable to remove deleted post hero images:", storageError);
     }
   }
 
@@ -180,6 +194,9 @@ export async function updateBlogPost(
   const contentSq = optionalField(formData, "content_sq");
   const author = String(formData.get("author") ?? defaultAuthor).trim();
   const heroImage = formData.get("heroImage");
+  const heroSliderImages = getHeroSliderImages(formData);
+  const removeHeroSliderImages =
+    formData.get("removeHeroSliderImages") === "on";
   const locale = await getLocale();
   const errors = getDictionary(locale).admin.errors;
 
@@ -202,11 +219,23 @@ export async function updateBlogPost(
     return { error: fieldError };
   }
 
+  if (heroSliderImages.length > MAX_HERO_SLIDER_IMAGES) {
+    return { error: errors.heroSliderLimit };
+  }
+
+  for (const sliderImage of heroSliderImages) {
+    const sliderImageError = validateHeroImage(sliderImage, errors);
+
+    if (sliderImageError) {
+      return { error: sliderImageError };
+    }
+  }
+
   const { supabase, userId } = await requireAdmin("/admin/blog");
 
   const { data: currentPost, error: loadError } = await supabase
     .from("blog_posts")
-    .select("slug,hero_image_path")
+    .select("slug,hero_image_path,hero_slider_image_paths")
     .eq("id", postId)
     .maybeSingle();
 
@@ -239,7 +268,7 @@ export async function updateBlogPost(
     slug = `${slug}-${Date.now().toString(36)}`;
   }
 
-  const updatePayload: Record<string, string | null> = {
+  const updatePayload: Record<string, string | string[] | null> = {
     title,
     slug,
     excerpt,
@@ -251,6 +280,7 @@ export async function updateBlogPost(
   };
 
   let uploadedHeroPath: string | null = null;
+  const uploadedSliderPaths: string[] = [];
 
   if (heroImage instanceof File && heroImage.size > 0) {
     const heroError = validateHeroImage(heroImage, errors);
@@ -287,6 +317,72 @@ export async function updateBlogPost(
     updatePayload.hero_image_url = publicUrl;
   }
 
+  if (heroSliderImages.length > 0) {
+    const heroSliderImageUrls: string[] = [];
+
+    for (const [index, sliderImage] of heroSliderImages.entries()) {
+      const sliderExtension = extensionForMimeType(sliderImage.type);
+
+      if (!sliderExtension) {
+        if (uploadedHeroPath) {
+          await supabase.storage
+            .from(BLOG_HERO_BUCKET)
+            .remove([uploadedHeroPath]);
+        }
+
+        if (uploadedSliderPaths.length > 0) {
+          await supabase.storage
+            .from(BLOG_HERO_BUCKET)
+            .remove(uploadedSliderPaths);
+        }
+
+        return { error: errors.heroUnsupported };
+      }
+
+      const sliderImagePath = `${userId}/${Date.now()}-${slug}-slider-${
+        index + 1
+      }.${sliderExtension}`;
+      const { error: sliderUploadError } = await supabase.storage
+        .from(BLOG_HERO_BUCKET)
+        .upload(sliderImagePath, sliderImage, {
+          cacheControl: "31536000",
+          contentType: sliderImage.type,
+          upsert: false,
+        });
+
+      if (sliderUploadError) {
+        if (uploadedHeroPath) {
+          await supabase.storage
+            .from(BLOG_HERO_BUCKET)
+            .remove([uploadedHeroPath]);
+        }
+
+        if (uploadedSliderPaths.length > 0) {
+          await supabase.storage
+            .from(BLOG_HERO_BUCKET)
+            .remove(uploadedSliderPaths);
+        }
+
+        return { error: sliderUploadError.message };
+      }
+
+      const {
+        data: { publicUrl: sliderPublicUrl },
+      } = supabase.storage
+        .from(BLOG_HERO_BUCKET)
+        .getPublicUrl(sliderImagePath);
+
+      uploadedSliderPaths.push(sliderImagePath);
+      heroSliderImageUrls.push(sliderPublicUrl);
+    }
+
+    updatePayload.hero_slider_image_paths = uploadedSliderPaths;
+    updatePayload.hero_slider_image_urls = heroSliderImageUrls;
+  } else if (removeHeroSliderImages) {
+    updatePayload.hero_slider_image_paths = [];
+    updatePayload.hero_slider_image_urls = [];
+  }
+
   const { error: updateError } = await supabase
     .from("blog_posts")
     .update(updatePayload)
@@ -295,6 +391,12 @@ export async function updateBlogPost(
   if (updateError) {
     if (uploadedHeroPath) {
       await supabase.storage.from(BLOG_HERO_BUCKET).remove([uploadedHeroPath]);
+    }
+
+    if (uploadedSliderPaths.length > 0) {
+      await supabase.storage
+        .from(BLOG_HERO_BUCKET)
+        .remove(uploadedSliderPaths);
     }
 
     return { error: updateError.message };
@@ -311,6 +413,24 @@ export async function updateBlogPost(
 
     if (storageError) {
       console.warn("Unable to remove replaced post hero image:", storageError);
+    }
+  }
+
+  const shouldRemoveExistingSliderImages =
+    uploadedSliderPaths.length > 0 || removeHeroSliderImages;
+  const currentSliderPaths =
+    (currentPost.hero_slider_image_paths as string[] | null) ?? [];
+
+  if (shouldRemoveExistingSliderImages && currentSliderPaths.length > 0) {
+    const { error: storageError } = await supabase.storage
+      .from(BLOG_HERO_BUCKET)
+      .remove(currentSliderPaths);
+
+    if (storageError) {
+      console.warn(
+        "Unable to remove replaced post hero slider images:",
+        storageError
+      );
     }
   }
 

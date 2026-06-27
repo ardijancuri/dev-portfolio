@@ -5,7 +5,10 @@ import {
   type CreateBlogPostState,
   createBlogPost,
 } from "@/app/admin/blog/new/actions";
-import { MAX_BLOG_EXCERPT_CHARS } from "@/lib/blog-utils";
+import {
+  MAX_BLOG_EXCERPT_CHARS,
+  MAX_HERO_SLIDER_IMAGES,
+} from "@/lib/blog-utils";
 import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 import { defaultAuthor } from "@/lib/site";
 
@@ -22,6 +25,7 @@ export default function AdminBlogForm({
   );
   const t = getDictionary(locale).admin;
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [sliderPreviewUrls, setSliderPreviewUrls] = useState<string[]>([]);
 
   useEffect(() => {
     return () => {
@@ -31,12 +35,28 @@ export default function AdminBlogForm({
     };
   }, [previewUrl]);
 
+  useEffect(() => {
+    return () => {
+      sliderPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [sliderPreviewUrls]);
+
   const updatePreview = (file: File | null) => {
     if (previewUrl) {
       URL.revokeObjectURL(previewUrl);
     }
 
     setPreviewUrl(file ? URL.createObjectURL(file) : null);
+  };
+
+  const updateSliderPreviews = (files: FileList | null) => {
+    const nextUrls = files
+      ? Array.from(files)
+          .slice(0, MAX_HERO_SLIDER_IMAGES)
+          .map((file) => URL.createObjectURL(file))
+      : [];
+
+    setSliderPreviewUrls(nextUrls);
   };
 
   return (
@@ -224,6 +244,65 @@ export default function AdminBlogForm({
             </div>
           )}
         </div>
+
+        <div>
+          <label
+            htmlFor="heroSliderImages"
+            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+          >
+            {t.form.heroSliderImages}
+          </label>
+          <input
+            id="heroSliderImages"
+            name="heroSliderImages"
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            multiple
+            onChange={(event) => {
+              const files = event.currentTarget.files;
+              const tooMany = files
+                ? files.length > MAX_HERO_SLIDER_IMAGES
+                : false;
+
+              event.currentTarget.setCustomValidity(
+                tooMany ? t.errors.heroSliderLimit : ""
+              );
+
+              if (tooMany) {
+                event.currentTarget.reportValidity();
+              }
+
+              updateSliderPreviews(files);
+            }}
+            className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
+          />
+          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+            {t.form.heroSliderHelp}
+          </p>
+        </div>
+
+        {sliderPreviewUrls.length > 0 ? (
+          <div>
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
+              {t.form.selectedSliderImages}
+            </p>
+            <div className="grid grid-cols-2 gap-3">
+              {sliderPreviewUrls.map((url, index) => (
+                <div
+                  key={url}
+                  className="aspect-[4/3] overflow-hidden border-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={url}
+                    alt={`Hero slider preview ${index + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        ) : null}
 
         {state.error && (
           <p className="border-2 border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300">

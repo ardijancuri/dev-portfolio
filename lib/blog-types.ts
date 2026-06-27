@@ -9,6 +9,8 @@ export interface BlogPost {
   content_sq: string | null;
   hero_image_path: string;
   hero_image_url: string;
+  hero_slider_image_paths: string[];
+  hero_slider_image_urls: string[];
   author: string;
   created_by: string;
   created_at: string;

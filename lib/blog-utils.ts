@@ -2,6 +2,7 @@ import type { Locale } from "@/lib/i18n";
 
 export const BLOG_HERO_BUCKET = "blog-heroes";
 export const MAX_HERO_IMAGE_BYTES = 5 * 1024 * 1024;
+export const MAX_HERO_SLIDER_IMAGES = 5;
 export const MAX_BLOG_EXCERPT_CHARS = 800;
 export const ALLOWED_HERO_IMAGE_TYPES = [
   "image/jpeg",

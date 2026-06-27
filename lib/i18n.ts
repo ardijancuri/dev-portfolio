@@ -128,9 +128,17 @@ export const dictionaries = {
         author: "Author",
         heroImage: "Hero image",
         replaceHeroImage: "Replace hero image",
+        heroSliderImages: "Hero slider images",
+        replaceHeroSliderImages: "Replace hero slider images",
         heroHelp: "JPG, PNG, WebP, or GIF. Max 5 MB.",
         replaceHeroHelp:
           "Leave empty to keep the current image. JPG, PNG, WebP, or GIF. Max 5 MB.",
+        heroSliderHelp:
+          "Optional. Add up to 5 images that appear after the main hero image. JPG, PNG, WebP, or GIF. Max 5 MB each.",
+        replaceHeroSliderHelp:
+          "Choose up to 5 images to replace the current slider. Leave empty to keep them.",
+        removeHeroSliderImages: "Remove current slider images",
+        selectedSliderImages: "Selected slider images",
         preview: "Preview",
         publishing: "Publishing...",
         publish: "Publish post",
@@ -148,6 +156,7 @@ export const dictionaries = {
         heroType: "Hero image must be a JPG, PNG, WebP, or GIF file.",
         heroSize: "Hero image must be 5 MB or smaller.",
         heroUnsupported: "Unsupported hero image file type.",
+        heroSliderLimit: "Upload up to 5 hero slider images.",
         translationIncomplete:
           "Complete all Albanian translation fields, or leave them all empty.",
         albanianTitleLength:
@@ -276,9 +285,17 @@ export const dictionaries = {
         author: "Autori",
         heroImage: "Imazhi kryesor",
         replaceHeroImage: "Zëvendëso imazhin kryesor",
+        heroSliderImages: "Imazhet e sliderit kryesor",
+        replaceHeroSliderImages: "Zevendeso imazhet e sliderit kryesor",
         heroHelp: "JPG, PNG, WebP ose GIF. Maksimumi 5 MB.",
         replaceHeroHelp:
           "Lëre bosh për të mbajtur imazhin aktual. JPG, PNG, WebP ose GIF. Maksimumi 5 MB.",
+        heroSliderHelp:
+          "Opsionale. Shto deri ne 5 imazhe qe shfaqen pas imazhit kryesor. JPG, PNG, WebP ose GIF. Maksimumi 5 MB secili.",
+        replaceHeroSliderHelp:
+          "Zgjidh deri ne 5 imazhe per te zevendesuar sliderin aktual. Lere bosh per t'i mbajtur.",
+        removeHeroSliderImages: "Hiq imazhet aktuale te sliderit",
+        selectedSliderImages: "Imazhet e zgjedhura te sliderit",
         preview: "Parapamje",
         publishing: "Duke publikuar...",
         publish: "Publiko postimin",
@@ -297,6 +314,7 @@ export const dictionaries = {
         heroType: "Imazhi kryesor duhet të jetë JPG, PNG, WebP ose GIF.",
         heroSize: "Imazhi kryesor duhet të jetë 5 MB ose më i vogël.",
         heroUnsupported: "Lloj i pambështetur i imazhit kryesor.",
+        heroSliderLimit: "Ngarko deri ne 5 imazhe per sliderin kryesor.",
         translationIncomplete:
           "Plotëso të gjitha fushat e përkthimit shqip, ose lëri të gjitha bosh.",
         albanianTitleLength:

@@ -129,6 +129,7 @@ export default async function BlogPostPage({
           <div className="px-4 sm:px-6 md:px-8 lg:px-12">
             <BlogHeroMedia
               src={post.hero_image_url}
+              sliderSources={post.hero_slider_image_urls}
               title={localizedPost.title}
             />
           </div>
