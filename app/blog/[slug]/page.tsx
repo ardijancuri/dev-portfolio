@@ -8,6 +8,7 @@ import BlogHeroMedia from "@/components/BlogHeroMedia";
 import MarkdownExcerpt from "@/components/MarkdownExcerpt";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
+import SocialShareButtons from "@/components/SocialShareButtons";
 import { getAdjacentBlogPosts, getBlogPostBySlug } from "@/lib/blog";
 import {
   formatPostDate,
@@ -96,6 +97,7 @@ export default async function BlogPostPage({
   const hasPreviousAndNext = Boolean(
     adjacentPosts.previous && adjacentPosts.next,
   );
+  const postUrl = `${siteUrl}/blog/${post.slug}`;
 
   return (
     <>
@@ -104,12 +106,18 @@ export default async function BlogPostPage({
         <article>
           <header className="px-4 pb-10 pt-12 sm:px-6 md:px-8 lg:px-12">
             <div className="mx-auto max-w-5xl">
-              <Link
-                href="/blog"
-                className="mb-8 inline-flex border-2 border-zinc-200 px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
-              >
-                {t.post.backToBlog}
-              </Link>
+              <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+                <Link
+                  href="/blog"
+                  className="inline-flex border-2 border-zinc-200 px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:border-zinc-800 dark:text-white dark:hover:border-white dark:focus-visible:outline-white"
+                >
+                  {t.post.backToBlog}
+                </Link>
+                <SocialShareButtons
+                  title={localizedPost.title}
+                  url={postUrl}
+                />
+              </div>
               <p className="mb-4 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
                 {formatPostDate(post.created_at, locale)} /{" "}
                 {getReadingTime(localizedPost.content, locale)}
