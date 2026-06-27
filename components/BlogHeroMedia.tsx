@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
+
+const DRAG_THRESHOLD_PX = 6;
 
 export default function BlogHeroMedia({
   src,
@@ -13,24 +21,102 @@ export default function BlogHeroMedia({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const figureRef = useRef<HTMLElement>(null);
+  const viewportRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<HTMLDivElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const isDraggingRef = useRef(false);
+  const didDragRef = useRef(false);
+  const suppressClickRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartScrollLeftRef = useRef(0);
+  const scrollFrameRef = useRef<number | null>(null);
   const slides = [src, ...sliderSources].filter(
     (slide, index, allSlides) => slide && allSlides.indexOf(slide) === index
   );
-  const activeSlideIndex = Math.min(activeIndex, slides.length - 1);
+  const slideCount = Math.max(slides.length, 1);
+  const activeSlideIndex = Math.min(activeIndex, slideCount - 1);
   const activeSrc = slides[activeSlideIndex] ?? src;
   const hasMultipleSlides = slides.length > 1;
+  const progressWidth = `${scrollProgress * 100}%`;
 
-  const showSlide = (index: number) => {
-    setActiveIndex((index + slides.length) % slides.length);
+  const getNormalizedSlideIndex = useCallback(
+    (index: number) => ((index % slideCount) + slideCount) % slideCount,
+    [slideCount]
+  );
+
+  const showSlide = useCallback(
+    (index: number) => {
+      const nextIndex = getNormalizedSlideIndex(index);
+
+      setActiveIndex(nextIndex);
+    },
+    [getNormalizedSlideIndex, setActiveIndex]
+  );
+
+  const handleCarouselScroll = () => {
+    if (scrollFrameRef.current !== null) {
+      window.cancelAnimationFrame(scrollFrameRef.current);
+    }
+
+    scrollFrameRef.current = window.requestAnimationFrame(() => {
+      const carousel = carouselRef.current;
+      scrollFrameRef.current = null;
+
+      if (!carousel) {
+        return;
+      }
+
+      const maxScrollLeft = carousel.scrollWidth - carousel.clientWidth;
+      setScrollProgress(
+        maxScrollLeft > 0
+          ? Math.min(1, Math.max(0, carousel.scrollLeft / maxScrollLeft))
+          : 0
+      );
+    });
   };
 
-  const showPreviousSlide = () => {
-    showSlide(activeSlideIndex - 1);
+  const beginMouseDrag = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.button !== 0) {
+      return;
+    }
+
+    isDraggingRef.current = true;
+    didDragRef.current = false;
+    dragStartXRef.current = event.clientX;
+    dragStartScrollLeftRef.current = event.currentTarget.scrollLeft;
   };
 
-  const showNextSlide = () => {
-    showSlide(activeSlideIndex + 1);
+  const moveMouseDrag = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) {
+      return;
+    }
+
+    const dragDistance = event.clientX - dragStartXRef.current;
+
+    if (Math.abs(dragDistance) > DRAG_THRESHOLD_PX) {
+      didDragRef.current = true;
+      event.preventDefault();
+    }
+
+    event.currentTarget.scrollLeft =
+      dragStartScrollLeftRef.current - dragDistance;
+  };
+
+  const endMouseDrag = () => {
+    if (!isDraggingRef.current) {
+      return;
+    }
+
+    isDraggingRef.current = false;
+
+    if (didDragRef.current) {
+      suppressClickRef.current = true;
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    }
   };
 
   useEffect(() => {
@@ -52,11 +138,11 @@ export default function BlogHeroMedia({
       }
 
       if (event.key === "ArrowLeft") {
-        setActiveIndex((index) => (index - 1 + slides.length) % slides.length);
+        showSlide(activeSlideIndex - 1);
       }
 
       if (event.key === "ArrowRight") {
-        setActiveIndex((index) => (index + 1) % slides.length);
+        showSlide(activeSlideIndex + 1);
       }
     };
 
@@ -66,68 +152,132 @@ export default function BlogHeroMedia({
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [hasMultipleSlides, isOpen, slides.length]);
+  }, [activeSlideIndex, hasMultipleSlides, isOpen, showSlide]);
+
+  useLayoutEffect(() => {
+    const updateStartInset = () => {
+      const figure = figureRef.current;
+
+      if (!figure) {
+        return;
+      }
+
+      const startInset = Math.max(0, figure.getBoundingClientRect().left);
+      figure.style.setProperty("--hero-start-inset", `${startInset}px`);
+      figure.style.setProperty(
+        "--hero-viewport-width",
+        `${document.documentElement.clientWidth}px`
+      );
+    };
+
+    updateStartInset();
+    window.addEventListener("resize", updateStartInset);
+
+    return () => {
+      window.removeEventListener("resize", updateStartInset);
+    };
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (scrollFrameRef.current !== null) {
+        window.cancelAnimationFrame(scrollFrameRef.current);
+      }
+    };
+  }, []);
 
   return (
     <>
-      <figure className="mx-auto max-w-5xl overflow-hidden bg-zinc-100 dark:bg-zinc-900">
-        <div className="relative">
-          <button
-            type="button"
-            aria-label={`Open ${title} hero image ${activeSlideIndex + 1}`}
-            onClick={() => setIsOpen(true)}
-            className="group block w-full cursor-zoom-in bg-transparent p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black dark:focus-visible:outline-white"
+      <figure
+        ref={figureRef}
+        className="mx-auto max-w-5xl [--hero-start-inset:1rem] [--hero-viewport-width:100%]"
+      >
+        <div
+          ref={viewportRef}
+          className="overflow-hidden"
+          style={{
+            marginLeft: "calc(var(--hero-start-inset) * -1)",
+            width: "var(--hero-viewport-width)",
+          }}
+        >
+          <div
+            ref={carouselRef}
+            role="region"
+            aria-label={`${title} hero images`}
+            className="scrollbar-hide flex cursor-grab select-none gap-4 overflow-x-auto touch-pan-x active:cursor-grabbing"
+            style={{
+              paddingLeft: "var(--hero-start-inset)",
+              paddingRight: "max(1rem, var(--hero-start-inset))",
+              scrollBehavior: "auto",
+            }}
+            onMouseDown={beginMouseDrag}
+            onMouseMove={moveMouseDrag}
+            onMouseUp={endMouseDrag}
+            onMouseLeave={endMouseDrag}
+            onScroll={handleCarouselScroll}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              key={activeSrc}
-              src={activeSrc}
-              alt={`${title} hero image ${activeSlideIndex + 1}`}
-              loading="eager"
-              decoding="async"
-              className="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-[1.01]"
-            />
-          </button>
-
-          {hasMultipleSlides ? (
-            <>
-              <button
-                type="button"
-                aria-label="Previous hero image"
-                onClick={showPreviousSlide}
-                className="absolute left-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border-2 border-white/70 bg-black/45 text-lg font-semibold text-white backdrop-blur-sm transition-colors hover:border-white hover:bg-black/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:left-5 sm:h-12 sm:w-12"
-              >
-                &lt;
-              </button>
-              <button
-                type="button"
-                aria-label="Next hero image"
-                onClick={showNextSlide}
-                className="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center border-2 border-white/70 bg-black/45 text-lg font-semibold text-white backdrop-blur-sm transition-colors hover:border-white hover:bg-black/70 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white sm:right-5 sm:h-12 sm:w-12"
-              >
-                &gt;
-              </button>
-              <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 gap-2">
-                {slides.map((slide, index) => (
-                  <button
-                    key={slide}
-                    type="button"
-                    aria-label={`Show hero image ${index + 1}`}
-                    aria-current={
-                      index === activeSlideIndex ? "true" : undefined
+            {slides.map((slide, index) => {
+              return (
+                <button
+                  key={slide}
+                  type="button"
+                  aria-label={`Open ${title} hero image ${index + 1}`}
+                  onClick={(event) => {
+                    if (suppressClickRef.current) {
+                      event.preventDefault();
+                      return;
                     }
-                    onClick={() => showSlide(index)}
-                    className={`h-2.5 w-8 border border-white/70 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${
-                      index === activeSlideIndex
-                        ? "bg-white"
-                        : "bg-black/40 hover:bg-white/70"
-                    }`}
-                  />
-                ))}
-              </div>
-            </>
-          ) : null}
+
+                    setActiveIndex(index);
+                    setIsOpen(true);
+                  }}
+                  className="group block flex-none cursor-zoom-in bg-transparent p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black dark:focus-visible:outline-white"
+                  style={{
+                    width: "min(86vw, 70rem)",
+                  }}
+                >
+                  <span className="relative block overflow-hidden bg-zinc-100 dark:bg-zinc-900">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={slide}
+                      alt={`${title} hero image ${index + 1}`}
+                      loading={index < 2 ? "eager" : "lazy"}
+                      decoding="async"
+                      draggable={false}
+                      className="relative z-10 h-auto w-full transition duration-500 group-hover:scale-[1.01]"
+                    />
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
+
+        {hasMultipleSlides ? (
+          <div
+            className="mt-5"
+            style={{
+              marginLeft: "calc(var(--hero-start-inset) * -1)",
+              width: "var(--hero-viewport-width)",
+            }}
+          >
+            <div
+              style={{
+                paddingLeft: "var(--hero-start-inset)",
+                paddingRight: "max(1rem, var(--hero-start-inset))",
+              }}
+            >
+              <div className="h-px overflow-hidden bg-zinc-200 dark:bg-zinc-800">
+                <div
+                  className="h-full bg-black dark:bg-white"
+                  style={{
+                    width: progressWidth,
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        ) : null}
       </figure>
 
       {isOpen ? (
@@ -146,7 +296,9 @@ export default function BlogHeroMedia({
             ref={closeButtonRef}
             type="button"
             aria-label="Close image preview"
-            onClick={() => setIsOpen(false)}
+            onClick={() => {
+              setIsOpen(false);
+            }}
             className="absolute right-4 top-4 flex h-11 w-11 items-center justify-center border-2 border-white/50 bg-black/40 text-xl font-semibold leading-none text-white transition-colors hover:border-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:right-6 sm:top-6"
           >
             X
@@ -162,16 +314,20 @@ export default function BlogHeroMedia({
               <button
                 type="button"
                 aria-label="Previous hero image"
-                onClick={showPreviousSlide}
-                className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border-2 border-white/50 bg-black/40 text-lg font-semibold text-white transition-colors hover:border-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:left-6"
+                onClick={() => {
+                  showSlide(activeSlideIndex - 1);
+                }}
+                className="absolute left-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center bg-transparent text-4xl font-light leading-none text-white/70 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:left-6"
               >
                 &lt;
               </button>
               <button
                 type="button"
                 aria-label="Next hero image"
-                onClick={showNextSlide}
-                className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center border-2 border-white/50 bg-black/40 text-lg font-semibold text-white transition-colors hover:border-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:right-6"
+                onClick={() => {
+                  showSlide(activeSlideIndex + 1);
+                }}
+                className="absolute right-3 top-1/2 flex h-12 w-12 -translate-y-1/2 items-center justify-center bg-transparent text-4xl font-light leading-none text-white/70 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white sm:right-6"
               >
                 &gt;
               </button>

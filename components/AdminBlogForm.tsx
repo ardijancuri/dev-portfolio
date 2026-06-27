@@ -1,10 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useRef, useState } from "react";
 import {
   type CreateBlogPostState,
   createBlogPost,
 } from "@/app/admin/blog/new/actions";
+import SliderImageOrderList, {
+  type SliderImageOrderItem,
+} from "@/components/SliderImageOrderList";
 import {
   MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_SLIDER_IMAGES,
@@ -13,6 +16,26 @@ import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 import { defaultAuthor } from "@/lib/site";
 
 const initialState: CreateBlogPostState = {};
+
+interface SliderUploadItem extends SliderImageOrderItem {
+  file: File;
+}
+
+function moveItem<T>(items: T[], fromIndex: number, toIndex: number) {
+  if (
+    toIndex < 0 ||
+    toIndex >= items.length ||
+    fromIndex < 0 ||
+    fromIndex >= items.length
+  ) {
+    return items;
+  }
+
+  const nextItems = [...items];
+  const [item] = nextItems.splice(fromIndex, 1);
+  nextItems.splice(toIndex, 0, item);
+  return nextItems;
+}
 
 export default function AdminBlogForm({
   locale = defaultLocale,
@@ -24,8 +47,9 @@ export default function AdminBlogForm({
     initialState
   );
   const t = getDictionary(locale).admin;
+  const sliderInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [sliderPreviewUrls, setSliderPreviewUrls] = useState<string[]>([]);
+  const [sliderImages, setSliderImages] = useState<SliderUploadItem[]>([]);
 
   useEffect(() => {
     return () => {
@@ -37,9 +61,9 @@ export default function AdminBlogForm({
 
   useEffect(() => {
     return () => {
-      sliderPreviewUrls.forEach((url) => URL.revokeObjectURL(url));
+      sliderImages.forEach((item) => URL.revokeObjectURL(item.url));
     };
-  }, [sliderPreviewUrls]);
+  }, [sliderImages]);
 
   const updatePreview = (file: File | null) => {
     if (previewUrl) {
@@ -50,17 +74,39 @@ export default function AdminBlogForm({
   };
 
   const updateSliderPreviews = (files: FileList | null) => {
-    const nextUrls = files
+    const nextItems = files
       ? Array.from(files)
           .slice(0, MAX_HERO_SLIDER_IMAGES)
-          .map((file) => URL.createObjectURL(file))
+          .map((file, index) => ({
+            id: `${file.name}-${file.lastModified}-${index}`,
+            file,
+            url: URL.createObjectURL(file),
+          }))
       : [];
 
-    setSliderPreviewUrls(nextUrls);
+    setSliderImages(nextItems);
+  };
+
+  const moveSliderImage = (fromIndex: number, toIndex: number) => {
+    setSliderImages((items) => moveItem(items, fromIndex, toIndex));
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    formData.delete("heroSliderImages");
+    sliderImages.forEach((item) => {
+      formData.append("heroSliderImages", item.file);
+    });
+
+    startTransition(() => {
+      formAction(formData);
+    });
   };
 
   return (
-    <form action={formAction} className="grid gap-8 lg:grid-cols-[1fr_20rem]">
+    <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1fr_20rem]">
       <div className="space-y-6">
         <div className="border-b border-zinc-200 pb-3 dark:border-zinc-800">
           <p className="text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
@@ -253,6 +299,7 @@ export default function AdminBlogForm({
             {t.form.heroSliderImages}
           </label>
           <input
+            ref={sliderInputRef}
             id="heroSliderImages"
             name="heroSliderImages"
             type="file"
@@ -270,6 +317,9 @@ export default function AdminBlogForm({
 
               if (tooMany) {
                 event.currentTarget.reportValidity();
+                setSliderImages([]);
+                event.currentTarget.value = "";
+                return;
               }
 
               updateSliderPreviews(files);
@@ -281,28 +331,11 @@ export default function AdminBlogForm({
           </p>
         </div>
 
-        {sliderPreviewUrls.length > 0 ? (
-          <div>
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
-              {t.form.selectedSliderImages}
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {sliderPreviewUrls.map((url, index) => (
-                <div
-                  key={url}
-                  className="aspect-[4/3] overflow-hidden border-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt={`Hero slider preview ${index + 1}`}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
+        <SliderImageOrderList
+          items={sliderImages}
+          label={t.form.selectedSliderImages}
+          onMove={moveSliderImage}
+        />
 
         {state.error && (
           <p className="border-2 border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300">

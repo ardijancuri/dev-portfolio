@@ -1,10 +1,13 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { startTransition, useActionState, useEffect, useState } from "react";
 import {
   type EditBlogPostState,
   updateBlogPost,
 } from "@/app/admin/blog/actions";
+import SliderImageOrderList, {
+  type SliderImageOrderItem,
+} from "@/components/SliderImageOrderList";
 import type { BlogPost } from "@/lib/blog-types";
 import {
   MAX_BLOG_EXCERPT_CHARS,
@@ -13,6 +16,34 @@ import {
 import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 
 const initialState: EditBlogPostState = {};
+
+interface SliderUploadItem extends SliderImageOrderItem {
+  file: File;
+}
+
+function moveItem<T>(items: T[], fromIndex: number, toIndex: number) {
+  if (
+    toIndex < 0 ||
+    toIndex >= items.length ||
+    fromIndex < 0 ||
+    fromIndex >= items.length
+  ) {
+    return items;
+  }
+
+  const nextItems = [...items];
+  const [item] = nextItems.splice(fromIndex, 1);
+  nextItems.splice(toIndex, 0, item);
+  return nextItems;
+}
+
+function getExistingSliderItems(post: BlogPost): SliderImageOrderItem[] {
+  return (post.hero_slider_image_urls ?? []).map((url, index) => ({
+    id: `${post.hero_slider_image_paths?.[index] ?? url}-${index}`,
+    url,
+    path: post.hero_slider_image_paths?.[index] ?? "",
+  }));
+}
 
 export default function EditBlogPostForm({
   post,
@@ -28,11 +59,19 @@ export default function EditBlogPostForm({
   const t = getDictionary(locale).admin;
   const [previewUrl, setPreviewUrl] = useState(post.hero_image_url);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
-  const [sliderPreviewUrls, setSliderPreviewUrls] = useState(
-    post.hero_slider_image_urls ?? []
-  );
-  const [sliderObjectUrls, setSliderObjectUrls] = useState<string[]>([]);
+  const [existingSliderImages, setExistingSliderImages] = useState<
+    SliderImageOrderItem[]
+  >(getExistingSliderItems(post));
+  const [replacementSliderImages, setReplacementSliderImages] = useState<
+    SliderUploadItem[]
+  >([]);
   const [removeSliderImages, setRemoveSliderImages] = useState(false);
+  const displayedSliderImages =
+    replacementSliderImages.length > 0
+      ? replacementSliderImages
+      : removeSliderImages
+        ? []
+        : existingSliderImages;
 
   useEffect(() => {
     return () => {
@@ -44,9 +83,9 @@ export default function EditBlogPostForm({
 
   useEffect(() => {
     return () => {
-      sliderObjectUrls.forEach((url) => URL.revokeObjectURL(url));
+      replacementSliderImages.forEach((item) => URL.revokeObjectURL(item.url));
     };
-  }, [sliderObjectUrls]);
+  }, [replacementSliderImages]);
 
   const updatePreview = (file: File | null) => {
     const nextObjectUrl = file ? URL.createObjectURL(file) : null;
@@ -55,23 +94,47 @@ export default function EditBlogPostForm({
   };
 
   const updateSliderPreviews = (files: FileList | null) => {
-    const nextObjectUrls = files
+    const nextItems = files
       ? Array.from(files)
           .slice(0, MAX_HERO_SLIDER_IMAGES)
-          .map((file) => URL.createObjectURL(file))
+          .map((file, index) => ({
+            id: `${file.name}-${file.lastModified}-${index}`,
+            file,
+            url: URL.createObjectURL(file),
+          }))
       : [];
 
-    setSliderObjectUrls(nextObjectUrls);
+    setReplacementSliderImages(nextItems);
     setRemoveSliderImages(false);
-    setSliderPreviewUrls(
-      nextObjectUrls.length > 0
-        ? nextObjectUrls
-        : post.hero_slider_image_urls ?? []
-    );
+  };
+
+  const moveSliderImage = (fromIndex: number, toIndex: number) => {
+    if (replacementSliderImages.length > 0) {
+      setReplacementSliderImages((items) =>
+        moveItem(items, fromIndex, toIndex)
+      );
+      return;
+    }
+
+    setExistingSliderImages((items) => moveItem(items, fromIndex, toIndex));
+  };
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    formData.delete("heroSliderImages");
+    replacementSliderImages.forEach((item) => {
+      formData.append("heroSliderImages", item.file);
+    });
+
+    startTransition(() => {
+      formAction(formData);
+    });
   };
 
   return (
-    <form action={formAction} className="grid gap-8 lg:grid-cols-[1fr_20rem]">
+    <form onSubmit={handleSubmit} className="grid gap-8 lg:grid-cols-[1fr_20rem]">
       <input type="hidden" name="id" value={post.id} />
 
       <div className="space-y-6">
@@ -288,6 +351,9 @@ export default function EditBlogPostForm({
 
               if (tooMany) {
                 event.currentTarget.reportValidity();
+                setReplacementSliderImages([]);
+                event.currentTarget.value = "";
+                return;
               }
 
               updateSliderPreviews(files);
@@ -300,7 +366,7 @@ export default function EditBlogPostForm({
         </div>
 
         {(post.hero_slider_image_urls ?? []).length > 0 &&
-        sliderObjectUrls.length === 0 ? (
+        replacementSliderImages.length === 0 ? (
           <label className="flex items-start gap-3 text-sm text-zinc-600 dark:text-zinc-400">
             <input
               name="removeHeroSliderImages"
@@ -309,9 +375,6 @@ export default function EditBlogPostForm({
               onChange={(event) => {
                 const shouldRemove = event.currentTarget.checked;
                 setRemoveSliderImages(shouldRemove);
-                setSliderPreviewUrls(
-                  shouldRemove ? [] : post.hero_slider_image_urls ?? []
-                );
               }}
               className="mt-1 h-4 w-4 accent-black dark:accent-white"
             />
@@ -319,28 +382,14 @@ export default function EditBlogPostForm({
           </label>
         ) : null}
 
-        {sliderPreviewUrls.length > 0 ? (
-          <div>
-            <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-zinc-500 dark:text-zinc-500">
-              {t.form.selectedSliderImages}
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {sliderPreviewUrls.map((url, index) => (
-                <div
-                  key={url}
-                  className="aspect-[4/3] overflow-hidden border-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={url}
-                    alt={`Hero slider preview ${index + 1}`}
-                    className="h-full w-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : null}
+        <SliderImageOrderList
+          items={displayedSliderImages}
+          label={t.form.selectedSliderImages}
+          onMove={moveSliderImage}
+          includeHiddenFields={
+            replacementSliderImages.length === 0 && !removeSliderImages
+          }
+        />
 
         {state.error && (
           <p className="border-2 border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300">

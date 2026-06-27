@@ -113,6 +113,76 @@ function getHeroSliderImages(formData: FormData) {
     );
 }
 
+function getStringList(formData: FormData, key: string) {
+  return formData
+    .getAll(key)
+    .map((value) => String(value ?? "").trim())
+    .filter(Boolean);
+}
+
+function getOrderedExistingSliderImages({
+  formData,
+  currentPaths,
+  currentUrls,
+  errors,
+}: {
+  formData: FormData;
+  currentPaths: string[];
+  currentUrls: string[];
+  errors: AdminErrors;
+}) {
+  const orderedPaths = getStringList(formData, "heroSliderImagePaths");
+  const orderedUrls = getStringList(formData, "heroSliderImageUrls");
+  const hasSubmittedOrder = orderedPaths.length > 0 || orderedUrls.length > 0;
+
+  if (!hasSubmittedOrder) {
+    return {
+      paths: currentPaths,
+      urls: currentUrls,
+      shouldUpdate: false,
+      error: null,
+    };
+  }
+
+  if (
+    orderedPaths.length !== orderedUrls.length ||
+    orderedPaths.length > MAX_HERO_SLIDER_IMAGES
+  ) {
+    return {
+      paths: currentPaths,
+      urls: currentUrls,
+      shouldUpdate: false,
+      error: errors.heroSliderOrderInvalid,
+    };
+  }
+
+  const currentPairs = new Set(
+    currentPaths.map((path, index) => `${path}\u0000${currentUrls[index] ?? ""}`)
+  );
+  const submittedPairs = orderedPaths.map(
+    (path, index) => `${path}\u0000${orderedUrls[index] ?? ""}`
+  );
+
+  if (
+    submittedPairs.length !== currentPairs.size ||
+    submittedPairs.some((pair) => !currentPairs.has(pair))
+  ) {
+    return {
+      paths: currentPaths,
+      urls: currentUrls,
+      shouldUpdate: false,
+      error: errors.heroSliderOrderInvalid,
+    };
+  }
+
+  return {
+    paths: orderedPaths,
+    urls: orderedUrls,
+    shouldUpdate: true,
+    error: null,
+  };
+}
+
 function revalidateBlogViews(slug: string, previousSlug?: string) {
   revalidatePath("/");
   revalidatePath("/blog");
@@ -235,7 +305,7 @@ export async function updateBlogPost(
 
   const { data: currentPost, error: loadError } = await supabase
     .from("blog_posts")
-    .select("slug,hero_image_path,hero_slider_image_paths")
+    .select("slug,hero_image_path,hero_slider_image_paths,hero_slider_image_urls")
     .eq("id", postId)
     .maybeSingle();
 
@@ -281,6 +351,10 @@ export async function updateBlogPost(
 
   let uploadedHeroPath: string | null = null;
   const uploadedSliderPaths: string[] = [];
+  const currentSliderPaths =
+    (currentPost.hero_slider_image_paths as string[] | null) ?? [];
+  const currentSliderUrls =
+    (currentPost.hero_slider_image_urls as string[] | null) ?? [];
 
   if (heroImage instanceof File && heroImage.size > 0) {
     const heroError = validateHeroImage(heroImage, errors);
@@ -381,6 +455,26 @@ export async function updateBlogPost(
   } else if (removeHeroSliderImages) {
     updatePayload.hero_slider_image_paths = [];
     updatePayload.hero_slider_image_urls = [];
+  } else {
+    const orderedExistingSliderImages = getOrderedExistingSliderImages({
+      formData,
+      currentPaths: currentSliderPaths,
+      currentUrls: currentSliderUrls,
+      errors,
+    });
+
+    if (orderedExistingSliderImages.error) {
+      if (uploadedHeroPath) {
+        await supabase.storage.from(BLOG_HERO_BUCKET).remove([uploadedHeroPath]);
+      }
+
+      return { error: orderedExistingSliderImages.error };
+    }
+
+    if (orderedExistingSliderImages.shouldUpdate) {
+      updatePayload.hero_slider_image_paths = orderedExistingSliderImages.paths;
+      updatePayload.hero_slider_image_urls = orderedExistingSliderImages.urls;
+    }
   }
 
   const { error: updateError } = await supabase
@@ -418,8 +512,6 @@ export async function updateBlogPost(
 
   const shouldRemoveExistingSliderImages =
     uploadedSliderPaths.length > 0 || removeHeroSliderImages;
-  const currentSliderPaths =
-    (currentPost.hero_slider_image_paths as string[] | null) ?? [];
 
   if (shouldRemoveExistingSliderImages && currentSliderPaths.length > 0) {
     const { error: storageError } = await supabase.storage

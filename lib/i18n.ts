@@ -157,6 +157,7 @@ export const dictionaries = {
         heroSize: "Hero image must be 5 MB or smaller.",
         heroUnsupported: "Unsupported hero image file type.",
         heroSliderLimit: "Upload up to 5 hero slider images.",
+        heroSliderOrderInvalid: "Hero slider image order is invalid.",
         translationIncomplete:
           "Complete all Albanian translation fields, or leave them all empty.",
         albanianTitleLength:
@@ -315,6 +316,8 @@ export const dictionaries = {
         heroSize: "Imazhi kryesor duhet të jetë 5 MB ose më i vogël.",
         heroUnsupported: "Lloj i pambështetur i imazhit kryesor.",
         heroSliderLimit: "Ngarko deri ne 5 imazhe per sliderin kryesor.",
+        heroSliderOrderInvalid:
+          "Renditja e imazheve te sliderit kryesor nuk eshte e vlefshme.",
         translationIncomplete:
           "Plotëso të gjitha fushat e përkthimit shqip, ose lëri të gjitha bosh.",
         albanianTitleLength:
