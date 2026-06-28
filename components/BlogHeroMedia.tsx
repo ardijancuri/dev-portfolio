@@ -204,11 +204,12 @@ export default function BlogHeroMedia({
             ref={carouselRef}
             role="region"
             aria-label={`${title} hero images`}
-            className="scrollbar-hide flex cursor-grab select-none gap-4 overflow-x-auto touch-pan-x active:cursor-grabbing"
+            className="scrollbar-hide flex cursor-grab select-none gap-4 overflow-x-auto active:cursor-grabbing"
             style={{
               paddingLeft: "var(--hero-start-inset)",
               paddingRight: "max(1rem, var(--hero-start-inset))",
               scrollBehavior: "auto",
+              touchAction: "pan-x pan-y pinch-zoom",
             }}
             onMouseDown={beginMouseDrag}
             onMouseMove={moveMouseDrag}
