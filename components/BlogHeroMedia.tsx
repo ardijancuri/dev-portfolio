@@ -232,7 +232,7 @@ export default function BlogHeroMedia({
                     setActiveIndex(index);
                     setIsOpen(true);
                   }}
-                  className="group block flex-none cursor-zoom-in bg-transparent p-0 text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black dark:focus-visible:outline-white"
+                  className="group block flex-none cursor-grab bg-transparent p-0 text-left active:cursor-grabbing focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black dark:focus-visible:outline-white"
                   style={{
                     width: "min(86vw, 70rem)",
                   }}
