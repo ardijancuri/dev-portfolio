@@ -5,6 +5,11 @@ const supabaseHostname = process.env.NEXT_PUBLIC_SUPABASE_URL
   : undefined;
 
 const nextConfig: NextConfig = {
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "35mb",
+    },
+  },
   images: {
     qualities: [75, 90],
     remotePatterns: supabaseHostname
