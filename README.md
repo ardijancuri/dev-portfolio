@@ -45,3 +45,7 @@ This portfolio includes a Supabase-backed blog and owner-only publishing area.
 4. Create the owner account in Supabase Auth.
 5. Insert that user id into `public.admin_users` with the SQL snippet at the bottom of `supabase/blog.sql`.
 6. Visit `/login`, sign in, and create posts at `/admin/blog/new`.
+
+Existing installations that already ran `supabase/blog.sql` should also run
+`supabase/blog-media-mode.sql` once to add the scrollable full-page screenshot
+mode and increase the hero upload limit for tall captures.

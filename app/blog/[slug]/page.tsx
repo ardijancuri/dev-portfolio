@@ -139,6 +139,9 @@ export default async function BlogPostPage({
               src={post.hero_image_url}
               sliderSources={post.hero_slider_image_urls}
               title={localizedPost.title}
+              mode={post.hero_media_mode}
+              websitePreviewLabel={t.post.websitePreview}
+              scrollHint={t.post.scrollToExplore}
             />
           </div>
 

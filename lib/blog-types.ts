@@ -1,3 +1,5 @@
+export type BlogHeroMediaMode = "slider" | "scroll";
+
 export interface BlogPost {
   id: string;
   title: string;
@@ -9,6 +11,7 @@ export interface BlogPost {
   content_sq: string | null;
   hero_image_path: string;
   hero_image_url: string;
+  hero_media_mode: BlogHeroMediaMode;
   hero_slider_image_paths: string[];
   hero_slider_image_urls: string[];
   author: string;

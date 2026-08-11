@@ -8,8 +8,10 @@ import {
   BLOG_HERO_BUCKET,
   MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_IMAGE_BYTES,
+  MAX_SCROLL_HERO_IMAGE_BYTES,
   MAX_HERO_SLIDER_IMAGES,
   extensionForMimeType,
+  parseBlogHeroMediaMode,
   slugifyTitle,
 } from "@/lib/blog-utils";
 import { getDictionary } from "@/lib/i18n";
@@ -84,13 +86,19 @@ function validatePostFields({
   return null;
 }
 
-function validateHeroImage(heroImage: File, errors: AdminErrors) {
+function validateHeroImage(
+  heroImage: File,
+  errors: AdminErrors,
+  maxBytes = MAX_HERO_IMAGE_BYTES
+) {
   if (!ALLOWED_HERO_IMAGE_TYPES.includes(heroImage.type)) {
     return errors.heroType;
   }
 
-  if (heroImage.size > MAX_HERO_IMAGE_BYTES) {
-    return errors.heroSize;
+  if (heroImage.size > maxBytes) {
+    return maxBytes === MAX_SCROLL_HERO_IMAGE_BYTES
+      ? errors.heroScrollSize
+      : errors.heroSize;
   }
 
   if (!extensionForMimeType(heroImage.type)) {
@@ -264,8 +272,11 @@ export async function updateBlogPost(
   const contentSq = optionalField(formData, "content_sq");
   const author = String(formData.get("author") ?? defaultAuthor).trim();
   const heroImage = formData.get("heroImage");
-  const heroSliderImages = getHeroSliderImages(formData);
+  const heroMediaMode = parseBlogHeroMediaMode(formData.get("heroMediaMode"));
+  const heroSliderImages =
+    heroMediaMode === "slider" ? getHeroSliderImages(formData) : [];
   const removeHeroSliderImages =
+    heroMediaMode === "scroll" ||
     formData.get("removeHeroSliderImages") === "on";
   const locale = await getLocale();
   const errors = getDictionary(locale).admin.errors;
@@ -347,6 +358,7 @@ export async function updateBlogPost(
     title_sq: titleSq,
     excerpt_sq: excerptSq,
     content_sq: contentSq,
+    hero_media_mode: heroMediaMode,
   };
 
   let uploadedHeroPath: string | null = null;
@@ -357,7 +369,13 @@ export async function updateBlogPost(
     (currentPost.hero_slider_image_urls as string[] | null) ?? [];
 
   if (heroImage instanceof File && heroImage.size > 0) {
-    const heroError = validateHeroImage(heroImage, errors);
+    const heroError = validateHeroImage(
+      heroImage,
+      errors,
+      heroMediaMode === "scroll"
+        ? MAX_SCROLL_HERO_IMAGE_BYTES
+        : MAX_HERO_IMAGE_BYTES
+    );
 
     if (heroError) {
       return { error: heroError };

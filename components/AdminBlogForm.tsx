@@ -5,9 +5,12 @@ import {
   type CreateBlogPostState,
   createBlogPost,
 } from "@/app/admin/blog/new/actions";
+import HeroImageFormPreview from "@/components/HeroImageFormPreview";
+import HeroMediaModeField from "@/components/HeroMediaModeField";
 import SliderImageOrderList, {
   type SliderImageOrderItem,
 } from "@/components/SliderImageOrderList";
+import type { BlogHeroMediaMode } from "@/lib/blog-types";
 import {
   MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_SLIDER_IMAGES,
@@ -50,6 +53,8 @@ export default function AdminBlogForm({
   const sliderInputRef = useRef<HTMLInputElement>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [sliderImages, setSliderImages] = useState<SliderUploadItem[]>([]);
+  const [heroMediaMode, setHeroMediaMode] =
+    useState<BlogHeroMediaMode>("slider");
 
   useEffect(() => {
     return () => {
@@ -96,9 +101,11 @@ export default function AdminBlogForm({
 
     const formData = new FormData(event.currentTarget);
     formData.delete("heroSliderImages");
-    sliderImages.forEach((item) => {
-      formData.append("heroSliderImages", item.file);
-    });
+    if (heroMediaMode === "slider") {
+      sliderImages.forEach((item) => {
+        formData.append("heroSliderImages", item.file);
+      });
+    }
 
     startTransition(() => {
       formAction(formData);
@@ -253,12 +260,23 @@ export default function AdminBlogForm({
           />
         </div>
 
+        <HeroMediaModeField
+          mode={heroMediaMode}
+          onChange={setHeroMediaMode}
+          label={t.form.heroMediaMode}
+          help={t.form.heroMediaModeHelp}
+          sliderLabel={t.form.imageSlider}
+          scrollLabel={t.form.scrollableWebsite}
+        />
+
         <div>
           <label
             htmlFor="heroImage"
             className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            {t.form.heroImage}
+            {heroMediaMode === "scroll"
+              ? t.form.fullPageScreenshot
+              : t.form.heroImage}
           </label>
           <input
             id="heroImage"
@@ -272,70 +290,69 @@ export default function AdminBlogForm({
             className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
           />
           <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-            {t.form.heroHelp}
+            {heroMediaMode === "scroll"
+              ? t.form.fullPageScreenshotHelp
+              : t.form.heroHelp}
           </p>
         </div>
 
-        <div className="aspect-[16/10] overflow-hidden border-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
-          {previewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-              {t.form.preview}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <label
-            htmlFor="heroSliderImages"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            {t.form.heroSliderImages}
-          </label>
-          <input
-            ref={sliderInputRef}
-            id="heroSliderImages"
-            name="heroSliderImages"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            multiple
-            onChange={(event) => {
-              const files = event.currentTarget.files;
-              const tooMany = files
-                ? files.length > MAX_HERO_SLIDER_IMAGES
-                : false;
-
-              event.currentTarget.setCustomValidity(
-                tooMany ? t.errors.heroSliderLimit : ""
-              );
-
-              if (tooMany) {
-                event.currentTarget.reportValidity();
-                setSliderImages([]);
-                event.currentTarget.value = "";
-                return;
-              }
-
-              updateSliderPreviews(files);
-            }}
-            className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
-          />
-          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-            {t.form.heroSliderHelp}
-          </p>
-        </div>
-
-        <SliderImageOrderList
-          items={sliderImages}
-          label={t.form.selectedSliderImages}
-          onMove={moveSliderImage}
+        <HeroImageFormPreview
+          src={previewUrl}
+          mode={heroMediaMode}
+          previewLabel={t.form.preview}
+          websitePreviewLabel={t.form.websitePreview}
+          scrollHint={t.form.scrollPreview}
         />
+
+        {heroMediaMode === "slider" ? (
+          <>
+            <div>
+              <label
+                htmlFor="heroSliderImages"
+                className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                {t.form.heroSliderImages}
+              </label>
+              <input
+                ref={sliderInputRef}
+                id="heroSliderImages"
+                name="heroSliderImages"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+                onChange={(event) => {
+                  const files = event.currentTarget.files;
+                  const tooMany = files
+                    ? files.length > MAX_HERO_SLIDER_IMAGES
+                    : false;
+
+                  event.currentTarget.setCustomValidity(
+                    tooMany ? t.errors.heroSliderLimit : ""
+                  );
+
+                  if (tooMany) {
+                    event.currentTarget.reportValidity();
+                    setSliderImages([]);
+                    event.currentTarget.value = "";
+                    return;
+                  }
+
+                  updateSliderPreviews(files);
+                }}
+                className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
+              />
+              <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                {t.form.heroSliderHelp}
+              </p>
+            </div>
+
+            <SliderImageOrderList
+              items={sliderImages}
+              label={t.form.selectedSliderImages}
+              onMove={moveSliderImage}
+            />
+          </>
+        ) : null}
 
         {state.error && (
           <p className="border-2 border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300">

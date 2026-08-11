@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import type { BlogHeroMediaMode } from "@/lib/blog-types";
 
 const DRAG_THRESHOLD_PX = 6;
 
@@ -14,10 +15,16 @@ export default function BlogHeroMedia({
   src,
   sliderSources = [],
   title,
+  mode = "slider",
+  websitePreviewLabel = "Website preview",
+  scrollHint = "Scroll to explore",
 }: {
   src: string;
   sliderSources?: string[];
   title: string;
+  mode?: BlogHeroMediaMode;
+  websitePreviewLabel?: string;
+  scrollHint?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -185,6 +192,44 @@ export default function BlogHeroMedia({
       }
     };
   }, []);
+
+  if (mode === "scroll") {
+    return (
+      <figure
+        ref={figureRef}
+        className="mx-auto w-full max-w-5xl"
+      >
+        <div className="flex aspect-square flex-col overflow-hidden border border-zinc-300 bg-white shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] dark:border-zinc-700 dark:bg-zinc-950">
+          <figcaption className="flex h-11 shrink-0 items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
+            <span className="flex gap-1.5" aria-hidden="true">
+              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+              <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
+            </span>
+            <span className="min-w-0 flex-1 truncate font-medium text-zinc-700 dark:text-zinc-300">
+              {websitePreviewLabel}
+            </span>
+            <span className="shrink-0">{scrollHint}</span>
+          </figcaption>
+          <div
+            role="region"
+            aria-label={`${title}: ${websitePreviewLabel}`}
+            tabIndex={0}
+            className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-black dark:focus-visible:outline-white"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={src}
+              alt={`${title} full-page website screenshot`}
+              loading="eager"
+              decoding="async"
+              className="block h-auto w-full"
+            />
+          </div>
+        </div>
+      </figure>
+    );
+  }
 
   return (
     <>

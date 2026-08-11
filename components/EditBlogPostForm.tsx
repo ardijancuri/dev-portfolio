@@ -5,10 +5,12 @@ import {
   type EditBlogPostState,
   updateBlogPost,
 } from "@/app/admin/blog/actions";
+import HeroImageFormPreview from "@/components/HeroImageFormPreview";
+import HeroMediaModeField from "@/components/HeroMediaModeField";
 import SliderImageOrderList, {
   type SliderImageOrderItem,
 } from "@/components/SliderImageOrderList";
-import type { BlogPost } from "@/lib/blog-types";
+import type { BlogHeroMediaMode, BlogPost } from "@/lib/blog-types";
 import {
   MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_SLIDER_IMAGES,
@@ -59,6 +61,9 @@ export default function EditBlogPostForm({
   const t = getDictionary(locale).admin;
   const [previewUrl, setPreviewUrl] = useState(post.hero_image_url);
   const [objectUrl, setObjectUrl] = useState<string | null>(null);
+  const [heroMediaMode, setHeroMediaMode] = useState<BlogHeroMediaMode>(
+    post.hero_media_mode ?? "slider"
+  );
   const [existingSliderImages, setExistingSliderImages] = useState<
     SliderImageOrderItem[]
   >(getExistingSliderItems(post));
@@ -124,9 +129,11 @@ export default function EditBlogPostForm({
 
     const formData = new FormData(event.currentTarget);
     formData.delete("heroSliderImages");
-    replacementSliderImages.forEach((item) => {
-      formData.append("heroSliderImages", item.file);
-    });
+    if (heroMediaMode === "slider") {
+      replacementSliderImages.forEach((item) => {
+        formData.append("heroSliderImages", item.file);
+      });
+    }
 
     startTransition(() => {
       formAction(formData);
@@ -289,12 +296,23 @@ export default function EditBlogPostForm({
           />
         </div>
 
+        <HeroMediaModeField
+          mode={heroMediaMode}
+          onChange={setHeroMediaMode}
+          label={t.form.heroMediaMode}
+          help={t.form.heroMediaModeHelp}
+          sliderLabel={t.form.imageSlider}
+          scrollLabel={t.form.scrollableWebsite}
+        />
+
         <div>
           <label
             htmlFor="heroImage"
             className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
           >
-            {t.form.replaceHeroImage}
+            {heroMediaMode === "scroll"
+              ? t.form.replaceFullPageScreenshot
+              : t.form.replaceHeroImage}
           </label>
           <input
             id="heroImage"
@@ -307,89 +325,88 @@ export default function EditBlogPostForm({
             className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
           />
           <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-            {t.form.replaceHeroHelp}
+            {heroMediaMode === "scroll"
+              ? t.form.replaceFullPageScreenshotHelp
+              : t.form.replaceHeroHelp}
           </p>
         </div>
 
-        <div className="aspect-[16/10] overflow-hidden border-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900">
-          {previewUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={previewUrl}
-              alt=""
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-sm font-medium uppercase tracking-[0.2em] text-zinc-400">
-              {t.form.preview}
-            </div>
-          )}
-        </div>
-
-        <div>
-          <label
-            htmlFor="heroSliderImages"
-            className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
-          >
-            {t.form.replaceHeroSliderImages}
-          </label>
-          <input
-            id="heroSliderImages"
-            name="heroSliderImages"
-            type="file"
-            accept="image/jpeg,image/png,image/webp,image/gif"
-            multiple
-            onChange={(event) => {
-              const files = event.currentTarget.files;
-              const tooMany = files
-                ? files.length > MAX_HERO_SLIDER_IMAGES
-                : false;
-
-              event.currentTarget.setCustomValidity(
-                tooMany ? t.errors.heroSliderLimit : ""
-              );
-
-              if (tooMany) {
-                event.currentTarget.reportValidity();
-                setReplacementSliderImages([]);
-                event.currentTarget.value = "";
-                return;
-              }
-
-              updateSliderPreviews(files);
-            }}
-            className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
-          />
-          <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
-            {t.form.replaceHeroSliderHelp}
-          </p>
-        </div>
-
-        {(post.hero_slider_image_urls ?? []).length > 0 &&
-        replacementSliderImages.length === 0 ? (
-          <label className="flex items-start gap-3 text-sm text-zinc-600 dark:text-zinc-400">
-            <input
-              name="removeHeroSliderImages"
-              type="checkbox"
-              checked={removeSliderImages}
-              onChange={(event) => {
-                const shouldRemove = event.currentTarget.checked;
-                setRemoveSliderImages(shouldRemove);
-              }}
-              className="mt-1 h-4 w-4 accent-black dark:accent-white"
-            />
-            <span>{t.form.removeHeroSliderImages}</span>
-          </label>
-        ) : null}
-
-        <SliderImageOrderList
-          items={displayedSliderImages}
-          label={t.form.selectedSliderImages}
-          onMove={moveSliderImage}
-          includeHiddenFields={
-            replacementSliderImages.length === 0 && !removeSliderImages
-          }
+        <HeroImageFormPreview
+          src={previewUrl}
+          mode={heroMediaMode}
+          previewLabel={t.form.preview}
+          websitePreviewLabel={t.form.websitePreview}
+          scrollHint={t.form.scrollPreview}
         />
+
+        {heroMediaMode === "slider" ? (
+          <>
+            <div>
+              <label
+                htmlFor="heroSliderImages"
+                className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+              >
+                {t.form.replaceHeroSliderImages}
+              </label>
+              <input
+                id="heroSliderImages"
+                name="heroSliderImages"
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                multiple
+                onChange={(event) => {
+                  const files = event.currentTarget.files;
+                  const tooMany = files
+                    ? files.length > MAX_HERO_SLIDER_IMAGES
+                    : false;
+
+                  event.currentTarget.setCustomValidity(
+                    tooMany ? t.errors.heroSliderLimit : ""
+                  );
+
+                  if (tooMany) {
+                    event.currentTarget.reportValidity();
+                    setReplacementSliderImages([]);
+                    event.currentTarget.value = "";
+                    return;
+                  }
+
+                  updateSliderPreviews(files);
+                }}
+                className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-sm text-black file:mr-4 file:border-0 file:bg-black file:px-4 file:py-2 file:text-sm file:font-medium file:text-white dark:border-zinc-800 dark:bg-black dark:text-white dark:file:bg-white dark:file:text-black"
+              />
+              <p className="mt-2 text-xs text-zinc-500 dark:text-zinc-500">
+                {t.form.replaceHeroSliderHelp}
+              </p>
+            </div>
+
+            {(post.hero_slider_image_urls ?? []).length > 0 &&
+            replacementSliderImages.length === 0 ? (
+              <label className="flex items-start gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+                <input
+                  name="removeHeroSliderImages"
+                  type="checkbox"
+                  checked={removeSliderImages}
+                  onChange={(event) => {
+                    const shouldRemove = event.currentTarget.checked;
+                    setRemoveSliderImages(shouldRemove);
+                  }}
+                  className="mt-1 h-4 w-4 accent-black dark:accent-white"
+                />
+                <span>{t.form.removeHeroSliderImages}</span>
+              </label>
+            ) : null}
+
+            <SliderImageOrderList
+              items={displayedSliderImages}
+              label={t.form.selectedSliderImages}
+              onMove={moveSliderImage}
+              includeHiddenFields={
+                replacementSliderImages.length === 0 && !removeSliderImages
+              }
+            />
+          </>
+        ) : null}
 
         {state.error && (
           <p className="border-2 border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-950 dark:bg-red-950/30 dark:text-red-300">

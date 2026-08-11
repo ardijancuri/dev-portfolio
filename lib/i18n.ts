@@ -58,6 +58,8 @@ export const dictionaries = {
       by: "By",
       previous: "Previous post",
       next: "Next post",
+      websitePreview: "Website preview",
+      scrollToExplore: "Scroll to explore",
     },
     projects: {
       loading: "Loading projects...",
@@ -126,8 +128,19 @@ export const dictionaries = {
         markdownHelp: "Markdown links are supported. Max",
         characters: "characters.",
         author: "Author",
+        heroMediaMode: "Scrollable website preview",
+        heroMediaModeHelp:
+          "Enable this to replace the image slider with a square window that scrolls through a full-page website screenshot.",
+        imageSlider: "Image slider",
+        scrollableWebsite: "Scrollable website",
         heroImage: "Hero image",
         replaceHeroImage: "Replace hero image",
+        fullPageScreenshot: "Full-page website screenshot",
+        replaceFullPageScreenshot: "Replace full-page website screenshot",
+        fullPageScreenshotHelp:
+          "Upload a tall screenshot of the complete website page. JPG, PNG, WebP, or GIF. Max 15 MB.",
+        replaceFullPageScreenshotHelp:
+          "Leave empty to keep the current screenshot. JPG, PNG, WebP, or GIF. Max 15 MB.",
         heroSliderImages: "Hero slider images",
         replaceHeroSliderImages: "Replace hero slider images",
         heroHelp: "JPG, PNG, WebP, or GIF. Max 5 MB.",
@@ -140,6 +153,8 @@ export const dictionaries = {
         removeHeroSliderImages: "Remove current slider images",
         selectedSliderImages: "Selected slider images",
         preview: "Preview",
+        websitePreview: "Website preview",
+        scrollPreview: "Scroll to preview",
         publishing: "Publishing...",
         publish: "Publish post",
         saving: "Saving...",
@@ -155,6 +170,8 @@ export const dictionaries = {
         heroRequired: "Hero image is required.",
         heroType: "Hero image must be a JPG, PNG, WebP, or GIF file.",
         heroSize: "Hero image must be 5 MB or smaller.",
+        heroScrollSize:
+          "The full-page website screenshot must be 15 MB or smaller.",
         heroUnsupported: "Unsupported hero image file type.",
         heroSliderLimit: "Upload up to 5 hero slider images.",
         heroSliderOrderInvalid: "Hero slider image order is invalid.",
@@ -216,6 +233,8 @@ export const dictionaries = {
       by: "Nga",
       previous: "Postimi i meparshem",
       next: "Postimi i radhes",
+      websitePreview: "Parapamja e faqes",
+      scrollToExplore: "Lëviz për ta eksploruar",
     },
     projects: {
       loading: "Duke ngarkuar projektet...",
@@ -284,8 +303,19 @@ export const dictionaries = {
         markdownHelp: "Linket Markdown mbështeten. Maksimumi",
         characters: "karaktere.",
         author: "Autori",
+        heroMediaMode: "Parapamje e faqes me lëvizje",
+        heroMediaModeHelp:
+          "Aktivizoje për ta zëvendësuar sliderin me një dritare katrore ku mund të lëvizësh nëpër screenshot-in e faqes së plotë.",
+        imageSlider: "Slider imazhesh",
+        scrollableWebsite: "Faqe me lëvizje",
         heroImage: "Imazhi kryesor",
         replaceHeroImage: "Zëvendëso imazhin kryesor",
+        fullPageScreenshot: "Screenshot i faqes së plotë",
+        replaceFullPageScreenshot: "Zëvendëso screenshot-in e faqes së plotë",
+        fullPageScreenshotHelp:
+          "Ngarko një screenshot të gjatë të faqes së plotë. JPG, PNG, WebP ose GIF. Maksimumi 15 MB.",
+        replaceFullPageScreenshotHelp:
+          "Lëre bosh për ta mbajtur screenshot-in aktual. JPG, PNG, WebP ose GIF. Maksimumi 15 MB.",
         heroSliderImages: "Imazhet e sliderit kryesor",
         replaceHeroSliderImages: "Zevendeso imazhet e sliderit kryesor",
         heroHelp: "JPG, PNG, WebP ose GIF. Maksimumi 5 MB.",
@@ -298,6 +328,8 @@ export const dictionaries = {
         removeHeroSliderImages: "Hiq imazhet aktuale te sliderit",
         selectedSliderImages: "Imazhet e zgjedhura te sliderit",
         preview: "Parapamje",
+        websitePreview: "Parapamja e faqes",
+        scrollPreview: "Lëviz për parapamje",
         publishing: "Duke publikuar...",
         publish: "Publiko postimin",
         saving: "Duke ruajtur...",
@@ -314,6 +346,8 @@ export const dictionaries = {
         heroRequired: "Imazhi kryesor kërkohet.",
         heroType: "Imazhi kryesor duhet të jetë JPG, PNG, WebP ose GIF.",
         heroSize: "Imazhi kryesor duhet të jetë 5 MB ose më i vogël.",
+        heroScrollSize:
+          "Screenshot-i i faqes së plotë duhet të jetë 15 MB ose më i vogël.",
         heroUnsupported: "Lloj i pambështetur i imazhit kryesor.",
         heroSliderLimit: "Ngarko deri ne 5 imazhe per sliderin kryesor.",
         heroSliderOrderInvalid:

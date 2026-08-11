@@ -9,8 +9,10 @@ import {
   BLOG_HERO_BUCKET,
   MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_IMAGE_BYTES,
+  MAX_SCROLL_HERO_IMAGE_BYTES,
   MAX_HERO_SLIDER_IMAGES,
   extensionForMimeType,
+  parseBlogHeroMediaMode,
   slugifyTitle,
 } from "@/lib/blog-utils";
 import { getDictionary } from "@/lib/i18n";
@@ -35,13 +37,19 @@ function getHeroSliderImages(formData: FormData) {
     );
 }
 
-function validateHeroImage(image: File, errors: AdminErrors) {
+function validateHeroImage(
+  image: File,
+  errors: AdminErrors,
+  maxBytes = MAX_HERO_IMAGE_BYTES
+) {
   if (!ALLOWED_HERO_IMAGE_TYPES.includes(image.type)) {
     return errors.heroType;
   }
 
-  if (image.size > MAX_HERO_IMAGE_BYTES) {
-    return errors.heroSize;
+  if (image.size > maxBytes) {
+    return maxBytes === MAX_SCROLL_HERO_IMAGE_BYTES
+      ? errors.heroScrollSize
+      : errors.heroSize;
   }
 
   if (!extensionForMimeType(image.type)) {
@@ -103,7 +111,9 @@ export async function createBlogPost(
   const contentSq = optionalField(formData, "content_sq");
   const author = String(formData.get("author") ?? defaultAuthor).trim();
   const heroImage = formData.get("heroImage");
-  const heroSliderImages = getHeroSliderImages(formData);
+  const heroMediaMode = parseBlogHeroMediaMode(formData.get("heroMediaMode"));
+  const heroSliderImages =
+    heroMediaMode === "slider" ? getHeroSliderImages(formData) : [];
 
   if (title.length < 3 || title.length > 160) {
     return { error: errors.titleLength };
@@ -138,7 +148,13 @@ export async function createBlogPost(
     return { error: errors.heroRequired };
   }
 
-  const heroError = validateHeroImage(heroImage, errors);
+  const heroError = validateHeroImage(
+    heroImage,
+    errors,
+    heroMediaMode === "scroll"
+      ? MAX_SCROLL_HERO_IMAGE_BYTES
+      : MAX_HERO_IMAGE_BYTES
+  );
 
   if (heroError) {
     return { error: heroError };
@@ -246,6 +262,7 @@ export async function createBlogPost(
     content_sq: contentSq,
     hero_image_path: heroPath,
     hero_image_url: publicUrl,
+    hero_media_mode: heroMediaMode,
     hero_slider_image_paths: heroSliderImagePaths,
     hero_slider_image_urls: heroSliderImageUrls,
     author,

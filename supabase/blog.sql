@@ -18,6 +18,8 @@ create table if not exists public.blog_posts (
   content_sq text check (content_sq is null or char_length(trim(content_sq)) >= 20),
   hero_image_path text not null,
   hero_image_url text not null,
+  hero_media_mode text not null default 'slider'
+    check (hero_media_mode in ('slider', 'scroll')),
   hero_slider_image_paths text[] not null default '{}',
   hero_slider_image_urls text[] not null default '{}',
   author text not null default 'Ardijan Curi',
@@ -30,8 +32,14 @@ alter table public.blog_posts
   add column if not exists title_sq text,
   add column if not exists excerpt_sq text,
   add column if not exists content_sq text,
+  add column if not exists hero_media_mode text not null default 'slider',
   add column if not exists hero_slider_image_paths text[] not null default '{}',
   add column if not exists hero_slider_image_urls text[] not null default '{}';
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_hero_media_mode_check,
+  add constraint blog_posts_hero_media_mode_check
+  check (hero_media_mode in ('slider', 'scroll'));
 
 alter table public.blog_posts
   drop constraint if exists blog_posts_excerpt_check,
@@ -67,6 +75,17 @@ alter table public.blog_posts
   drop constraint if exists blog_posts_hero_slider_image_arrays_match_check,
   add constraint blog_posts_hero_slider_image_arrays_match_check
   check (cardinality(hero_slider_image_paths) = cardinality(hero_slider_image_urls));
+
+alter table public.blog_posts
+  drop constraint if exists blog_posts_scroll_mode_has_no_slider_images_check,
+  add constraint blog_posts_scroll_mode_has_no_slider_images_check
+  check (
+    hero_media_mode = 'slider'
+    or (
+      cardinality(hero_slider_image_paths) = 0
+      and cardinality(hero_slider_image_urls) = 0
+    )
+  );
 
 create index if not exists blog_posts_created_at_idx
   on public.blog_posts (created_at desc);
@@ -162,7 +181,7 @@ values (
   'blog-heroes',
   'blog-heroes',
   true,
-  5242880,
+  15728640,
   array['image/jpeg', 'image/png', 'image/webp', 'image/gif']
 )
 on conflict (id) do update
