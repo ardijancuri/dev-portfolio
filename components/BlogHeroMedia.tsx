@@ -209,6 +209,17 @@ export default function BlogHeroMedia({
         return;
       }
 
+      const viewportRect = viewport.getBoundingClientRect();
+      const isPointerInsideViewport =
+        event.clientX >= viewportRect.left &&
+        event.clientX <= viewportRect.right &&
+        event.clientY >= viewportRect.top &&
+        event.clientY <= viewportRect.bottom;
+
+      if (!isPointerInsideViewport) {
+        return;
+      }
+
       const pixelDeltaY =
         event.deltaMode === WheelEvent.DOM_DELTA_LINE
           ? event.deltaY * 16
@@ -220,24 +231,31 @@ export default function BlogHeroMedia({
         0,
         viewport.scrollHeight - viewport.clientHeight
       );
+
+      if (maxScrollTop === 0) {
+        return;
+      }
+
       const nextScrollTop = viewport.scrollTop + pixelDeltaY;
       const overflowTop = Math.min(0, nextScrollTop);
       const overflowBottom = Math.max(0, nextScrollTop - maxScrollTop);
       const pageDeltaY = overflowTop + overflowBottom;
 
-      if (pageDeltaY === 0) {
-        return;
-      }
-
       event.preventDefault();
       viewport.scrollTop = Math.min(maxScrollTop, Math.max(0, nextScrollTop));
-      window.scrollBy({ top: pageDeltaY, behavior: "instant" });
+
+      if (pageDeltaY !== 0) {
+        window.scrollBy({ top: pageDeltaY, behavior: "instant" });
+      }
     };
 
-    viewport.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("wheel", handleWheel, {
+      capture: true,
+      passive: false,
+    });
 
     return () => {
-      viewport.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("wheel", handleWheel, { capture: true });
     };
   }, [mode]);
 
