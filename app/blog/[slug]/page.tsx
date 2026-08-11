@@ -136,14 +136,28 @@ export default async function BlogPostPage({
 
           <div className="px-4 sm:px-6 md:px-8 lg:px-12">
             {post.project_link_label && post.project_link_url ? (
-              <div className="mx-auto mb-5 flex max-w-5xl">
+              <div className="mx-auto mb-5 flex max-w-5xl justify-end">
                 <a
                   href={post.project_link_url}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex border-2 border-black bg-black px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white dark:focus-visible:outline-white"
+                  className="group inline-flex items-center gap-2 border-2 border-black bg-black px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white dark:focus-visible:outline-white"
                 >
-                  {post.project_link_label}
+                  <span>{post.project_link_label}</span>
+                  <svg
+                    aria-hidden="true"
+                    viewBox="0 0 16 16"
+                    className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
+                    fill="none"
+                  >
+                    <path
+                      d="M5 4h7v7M12 4 4 12"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.8"
+                    />
+                  </svg>
                 </a>
               </div>
             ) : null}
