@@ -193,39 +193,6 @@ export default function BlogHeroMedia({
     };
   }, []);
 
-  useEffect(() => {
-    if (mode !== "scroll") {
-      return;
-    }
-
-    const viewport = viewportRef.current;
-
-    if (!viewport) {
-      return;
-    }
-
-    const handleWheel = (event: WheelEvent) => {
-      const maxScrollTop = viewport.scrollHeight - viewport.clientHeight;
-      const isAtTop = viewport.scrollTop <= 1;
-      const isAtBottom = viewport.scrollTop >= maxScrollTop - 1;
-      const isLeavingTop = event.deltaY < 0 && isAtTop;
-      const isLeavingBottom = event.deltaY > 0 && isAtBottom;
-
-      if (!isLeavingTop && !isLeavingBottom) {
-        return;
-      }
-
-      event.preventDefault();
-      window.scrollBy({ top: event.deltaY, behavior: "auto" });
-    };
-
-    viewport.addEventListener("wheel", handleWheel, { passive: false });
-
-    return () => {
-      viewport.removeEventListener("wheel", handleWheel);
-    };
-  }, [mode]);
-
   if (mode === "scroll") {
     return (
       <figure
