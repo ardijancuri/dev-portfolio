@@ -247,7 +247,7 @@ export default function BlogHeroMedia({
         ref={figureRef}
         className="mx-auto w-full max-w-5xl"
       >
-        <div className="flex aspect-square flex-col overflow-hidden border border-zinc-300 bg-white shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] dark:border-zinc-700 dark:bg-zinc-950">
+        <div className="flex aspect-square flex-col overflow-hidden border border-zinc-300 bg-white shadow-[0_24px_80px_-48px_rgba(0,0,0,0.45)] dark:border-zinc-700 dark:bg-zinc-950 md:aspect-auto md:h-[min(72svh,42rem)] lg:h-[min(74svh,44rem)]">
           <figcaption className="flex h-11 shrink-0 items-center gap-3 border-b border-zinc-200 bg-zinc-50 px-4 text-xs text-zinc-500 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-400">
             <span className="flex gap-1.5" aria-hidden="true">
               <span className="h-2.5 w-2.5 rounded-full bg-zinc-300 dark:bg-zinc-700" />
