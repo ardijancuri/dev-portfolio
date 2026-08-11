@@ -193,6 +193,39 @@ export default function BlogHeroMedia({
     };
   }, []);
 
+  useEffect(() => {
+    if (mode !== "scroll") {
+      return;
+    }
+
+    const viewport = viewportRef.current;
+
+    if (!viewport) {
+      return;
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      const maxScrollTop = viewport.scrollHeight - viewport.clientHeight;
+      const isAtTop = viewport.scrollTop <= 1;
+      const isAtBottom = viewport.scrollTop >= maxScrollTop - 1;
+      const isLeavingTop = event.deltaY < 0 && isAtTop;
+      const isLeavingBottom = event.deltaY > 0 && isAtBottom;
+
+      if (!isLeavingTop && !isLeavingBottom) {
+        return;
+      }
+
+      event.preventDefault();
+      window.scrollBy({ top: event.deltaY, behavior: "auto" });
+    };
+
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      viewport.removeEventListener("wheel", handleWheel);
+    };
+  }, [mode]);
+
   if (mode === "scroll") {
     return (
       <figure
@@ -212,10 +245,11 @@ export default function BlogHeroMedia({
             <span className="shrink-0">{scrollHint}</span>
           </figcaption>
           <div
+            ref={viewportRef}
             role="region"
             aria-label={`${title}: ${websitePreviewLabel}`}
             tabIndex={0}
-            className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-black dark:focus-visible:outline-white"
+            className="scrollbar-hide min-h-0 flex-1 overflow-y-auto overscroll-auto bg-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-black dark:focus-visible:outline-white"
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
