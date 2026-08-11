@@ -135,6 +135,18 @@ export default async function BlogPostPage({
           </header>
 
           <div className="px-4 sm:px-6 md:px-8 lg:px-12">
+            {post.project_link_label && post.project_link_url ? (
+              <div className="mx-auto mb-5 flex max-w-5xl">
+                <a
+                  href={post.project_link_url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex border-2 border-black bg-black px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-white hover:text-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:border-white dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white dark:focus-visible:outline-white"
+                >
+                  {post.project_link_label}
+                </a>
+              </div>
+            ) : null}
             <BlogHeroMedia
               src={post.hero_image_url}
               sliderSources={post.hero_slider_image_urls}

@@ -6,6 +6,8 @@ export const MAX_HERO_IMAGE_BYTES = 5 * 1024 * 1024;
 export const MAX_SCROLL_HERO_IMAGE_BYTES = 15 * 1024 * 1024;
 export const MAX_HERO_SLIDER_IMAGES = 5;
 export const MAX_BLOG_EXCERPT_CHARS = 800;
+export const MAX_PROJECT_LINK_LABEL_CHARS = 80;
+export const MAX_PROJECT_LINK_URL_CHARS = 2048;
 export const ALLOWED_HERO_IMAGE_TYPES = [
   "image/jpeg",
   "image/png",
@@ -15,6 +17,20 @@ export const ALLOWED_HERO_IMAGE_TYPES = [
 
 export function parseBlogHeroMediaMode(value: unknown): BlogHeroMediaMode {
   return value === "scroll" ? "scroll" : "slider";
+}
+
+export function normalizeProjectLinkUrl(value: string) {
+  try {
+    const url = new URL(value);
+
+    if (url.protocol !== "http:" && url.protocol !== "https:") {
+      return null;
+    }
+
+    return url.toString();
+  } catch {
+    return null;
+  }
 }
 
 export function formatPostDate(date: string, locale: Locale = "en") {

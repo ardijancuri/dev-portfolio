@@ -11,7 +11,10 @@ import {
   MAX_HERO_IMAGE_BYTES,
   MAX_SCROLL_HERO_IMAGE_BYTES,
   MAX_HERO_SLIDER_IMAGES,
+  MAX_PROJECT_LINK_LABEL_CHARS,
+  MAX_PROJECT_LINK_URL_CHARS,
   extensionForMimeType,
+  normalizeProjectLinkUrl,
   parseBlogHeroMediaMode,
   slugifyTitle,
 } from "@/lib/blog-utils";
@@ -95,6 +98,35 @@ function validateAlbanianFields({
   return null;
 }
 
+function getProjectLinkFields(formData: FormData, errors: AdminErrors) {
+  const label = optionalField(formData, "projectLinkLabel");
+  const rawUrl = optionalField(formData, "projectLinkUrl");
+
+  if (!label && !rawUrl) {
+    return { label: null, url: null, error: null };
+  }
+
+  if (!label || !rawUrl) {
+    return { label: null, url: null, error: errors.projectLinkIncomplete };
+  }
+
+  if (label.length > MAX_PROJECT_LINK_LABEL_CHARS) {
+    return { label: null, url: null, error: errors.projectLinkLabelLength };
+  }
+
+  if (rawUrl.length > MAX_PROJECT_LINK_URL_CHARS) {
+    return { label: null, url: null, error: errors.projectLinkUrlInvalid };
+  }
+
+  const normalizedUrl = normalizeProjectLinkUrl(rawUrl);
+
+  if (!normalizedUrl) {
+    return { label: null, url: null, error: errors.projectLinkUrlInvalid };
+  }
+
+  return { label, url: normalizedUrl, error: null };
+}
+
 export async function createBlogPost(
   _previousState: CreateBlogPostState,
   formData: FormData
@@ -114,6 +146,11 @@ export async function createBlogPost(
   const heroMediaMode = parseBlogHeroMediaMode(formData.get("heroMediaMode"));
   const heroSliderImages =
     heroMediaMode === "slider" ? getHeroSliderImages(formData) : [];
+  const projectLink = getProjectLinkFields(formData, errors);
+
+  if (projectLink.error) {
+    return { error: projectLink.error };
+  }
 
   if (title.length < 3 || title.length > 160) {
     return { error: errors.titleLength };
@@ -265,6 +302,8 @@ export async function createBlogPost(
     hero_media_mode: heroMediaMode,
     hero_slider_image_paths: heroSliderImagePaths,
     hero_slider_image_urls: heroSliderImageUrls,
+    project_link_label: projectLink.label,
+    project_link_url: projectLink.url,
     author,
     created_by: userId,
   });

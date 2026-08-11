@@ -14,6 +14,8 @@ import type { BlogHeroMediaMode, BlogPost } from "@/lib/blog-types";
 import {
   MAX_BLOG_EXCERPT_CHARS,
   MAX_HERO_SLIDER_IMAGES,
+  MAX_PROJECT_LINK_LABEL_CHARS,
+  MAX_PROJECT_LINK_URL_CHARS,
 } from "@/lib/blog-utils";
 import { defaultLocale, getDictionary, type Locale } from "@/lib/i18n";
 
@@ -296,6 +298,48 @@ export default function EditBlogPostForm({
           />
         </div>
 
+        <div className="space-y-4 border-y border-zinc-200 py-4 dark:border-zinc-800">
+          <div>
+            <label
+              htmlFor="projectLinkLabel"
+              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              {t.form.projectLinkLabel}
+            </label>
+            <input
+              id="projectLinkLabel"
+              name="projectLinkLabel"
+              type="text"
+              maxLength={MAX_PROJECT_LINK_LABEL_CHARS}
+              defaultValue={post.project_link_label ?? ""}
+              placeholder={t.form.projectLinkLabelPlaceholder}
+              className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-black outline-none transition-colors placeholder:text-zinc-400 focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-white"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="projectLinkUrl"
+              className="mb-2 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+            >
+              {t.form.projectLinkUrl}
+            </label>
+            <input
+              id="projectLinkUrl"
+              name="projectLinkUrl"
+              type="url"
+              maxLength={MAX_PROJECT_LINK_URL_CHARS}
+              defaultValue={post.project_link_url ?? ""}
+              placeholder={t.form.projectLinkUrlPlaceholder}
+              className="w-full border-2 border-zinc-200 bg-white px-4 py-3 text-black outline-none transition-colors placeholder:text-zinc-400 focus:border-black dark:border-zinc-800 dark:bg-black dark:text-white dark:placeholder:text-zinc-600 dark:focus:border-white"
+            />
+          </div>
+
+          <p className="text-xs leading-relaxed text-zinc-500 dark:text-zinc-500">
+            {t.form.projectLinkHelp}
+          </p>
+        </div>
+
         <HeroMediaModeField
           mode={heroMediaMode}
           onChange={setHeroMediaMode}
@@ -382,7 +426,13 @@ export default function EditBlogPostForm({
 
             {(post.hero_slider_image_urls ?? []).length > 0 &&
             replacementSliderImages.length === 0 ? (
-              <label className="flex items-start gap-3 text-sm text-zinc-600 dark:text-zinc-400">
+              <label
+                className={`grid cursor-pointer grid-cols-[1.25rem_1fr] gap-3 border-2 p-3 text-sm transition-colors ${
+                  removeSliderImages
+                    ? "border-black bg-zinc-50 text-black dark:border-white dark:bg-zinc-950 dark:text-white"
+                    : "border-zinc-200 text-zinc-600 hover:border-zinc-400 dark:border-zinc-800 dark:text-zinc-400 dark:hover:border-zinc-600"
+                }`}
+              >
                 <input
                   name="removeHeroSliderImages"
                   type="checkbox"
@@ -391,8 +441,20 @@ export default function EditBlogPostForm({
                     const shouldRemove = event.currentTarget.checked;
                     setRemoveSliderImages(shouldRemove);
                   }}
-                  className="mt-1 h-4 w-4 accent-black dark:accent-white"
+                  className="peer sr-only"
                 />
+                <span
+                  aria-hidden="true"
+                  className={`mt-0.5 flex h-5 w-5 items-center justify-center border-2 ${
+                    removeSliderImages
+                      ? "border-black bg-black dark:border-white dark:bg-white"
+                      : "border-zinc-300 bg-white dark:border-zinc-700 dark:bg-black"
+                  } peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-black dark:peer-focus-visible:outline-white`}
+                >
+                  {removeSliderImages ? (
+                    <span className="h-2 w-2 bg-white dark:bg-black" />
+                  ) : null}
+                </span>
                 <span>{t.form.removeHeroSliderImages}</span>
               </label>
             ) : null}

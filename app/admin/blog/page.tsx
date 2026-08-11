@@ -61,6 +61,10 @@ export default async function AdminBlogPage() {
           <div className="border-y border-zinc-200 dark:border-zinc-800">
             {posts.map((post) => {
               const localizedPost = getLocalizedPost(post, locale);
+              const thumbnailPosition =
+                post.hero_media_mode === "scroll"
+                  ? "object-top"
+                  : "object-center";
 
               return (
               <article
@@ -74,7 +78,7 @@ export default async function AdminBlogPage() {
                       alt=""
                       fill
                       sizes="10rem"
-                      className="object-cover"
+                      className={`object-cover ${thumbnailPosition}`}
                     />
                   ) : (
                     <div className="flex h-full items-center justify-center text-xs font-medium uppercase tracking-[0.2em] text-zinc-400">

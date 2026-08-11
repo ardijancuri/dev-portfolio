@@ -128,6 +128,12 @@ export const dictionaries = {
         markdownHelp: "Markdown links are supported. Max",
         characters: "characters.",
         author: "Author",
+        projectLinkLabel: "Project link label",
+        projectLinkLabelPlaceholder: "Live Website",
+        projectLinkUrl: "Project redirect link",
+        projectLinkUrlPlaceholder: "https://example.com",
+        projectLinkHelp:
+          "Optional. Add both fields to show a visible project link above the media preview.",
         heroMediaMode: "Scrollable website preview",
         heroMediaModeHelp:
           "Enable this to replace the image slider with a square window that scrolls through a full-page website screenshot.",
@@ -175,6 +181,12 @@ export const dictionaries = {
         heroUnsupported: "Unsupported hero image file type.",
         heroSliderLimit: "Upload up to 5 hero slider images.",
         heroSliderOrderInvalid: "Hero slider image order is invalid.",
+        projectLinkIncomplete:
+          "Add both the project link label and redirect link, or leave both empty.",
+        projectLinkLabelLength:
+          "Project link label must be 80 characters or fewer.",
+        projectLinkUrlInvalid:
+          "Project redirect link must be a valid http or https URL.",
         translationIncomplete:
           "Complete all Albanian translation fields, or leave them all empty.",
         albanianTitleLength:
@@ -303,6 +315,12 @@ export const dictionaries = {
         markdownHelp: "Linket Markdown mbështeten. Maksimumi",
         characters: "karaktere.",
         author: "Autori",
+        projectLinkLabel: "Etiketa e linkut te projektit",
+        projectLinkLabelPlaceholder: "Live Website",
+        projectLinkUrl: "Linku ridrejtues i projektit",
+        projectLinkUrlPlaceholder: "https://example.com",
+        projectLinkHelp:
+          "Opsionale. Ploteso te dy fushat per ta shfaqur linkun mbi parapamjen e medias.",
         heroMediaMode: "Parapamje e faqes me lëvizje",
         heroMediaModeHelp:
           "Aktivizoje për ta zëvendësuar sliderin me një dritare katrore ku mund të lëvizësh nëpër screenshot-in e faqes së plotë.",
@@ -352,6 +370,12 @@ export const dictionaries = {
         heroSliderLimit: "Ngarko deri ne 5 imazhe per sliderin kryesor.",
         heroSliderOrderInvalid:
           "Renditja e imazheve te sliderit kryesor nuk eshte e vlefshme.",
+        projectLinkIncomplete:
+          "Shto etiketen dhe linkun ridrejtues te projektit, ose leri te dyja bosh.",
+        projectLinkLabelLength:
+          "Etiketa e linkut te projektit duhet te kete maksimum 80 karaktere.",
+        projectLinkUrlInvalid:
+          "Linku ridrejtues i projektit duhet te jete URL e vlefshme http ose https.",
         translationIncomplete:
           "Plotëso të gjitha fushat e përkthimit shqip, ose lëri të gjitha bosh.",
         albanianTitleLength:

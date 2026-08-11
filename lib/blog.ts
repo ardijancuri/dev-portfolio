@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { BlogPost } from "@/lib/blog-types";
 
 const postSelect =
-  "id,title,title_sq,slug,excerpt,excerpt_sq,content,content_sq,hero_image_path,hero_image_url,hero_media_mode,hero_slider_image_paths,hero_slider_image_urls,author,created_by,created_at,updated_at";
+  "id,title,title_sq,slug,excerpt,excerpt_sq,content,content_sq,hero_image_path,hero_image_url,hero_media_mode,hero_slider_image_paths,hero_slider_image_urls,project_link_label,project_link_url,author,created_by,created_at,updated_at";
 
 export const getBlogPosts = cache(async (limit?: number) => {
   if (!hasSupabaseEnv()) {

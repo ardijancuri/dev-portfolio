@@ -10,7 +10,10 @@ import {
   MAX_HERO_IMAGE_BYTES,
   MAX_SCROLL_HERO_IMAGE_BYTES,
   MAX_HERO_SLIDER_IMAGES,
+  MAX_PROJECT_LINK_LABEL_CHARS,
+  MAX_PROJECT_LINK_URL_CHARS,
   extensionForMimeType,
+  normalizeProjectLinkUrl,
   parseBlogHeroMediaMode,
   slugifyTitle,
 } from "@/lib/blog-utils";
@@ -126,6 +129,35 @@ function getStringList(formData: FormData, key: string) {
     .getAll(key)
     .map((value) => String(value ?? "").trim())
     .filter(Boolean);
+}
+
+function getProjectLinkFields(formData: FormData, errors: AdminErrors) {
+  const label = optionalField(formData, "projectLinkLabel");
+  const rawUrl = optionalField(formData, "projectLinkUrl");
+
+  if (!label && !rawUrl) {
+    return { label: null, url: null, error: null };
+  }
+
+  if (!label || !rawUrl) {
+    return { label: null, url: null, error: errors.projectLinkIncomplete };
+  }
+
+  if (label.length > MAX_PROJECT_LINK_LABEL_CHARS) {
+    return { label: null, url: null, error: errors.projectLinkLabelLength };
+  }
+
+  if (rawUrl.length > MAX_PROJECT_LINK_URL_CHARS) {
+    return { label: null, url: null, error: errors.projectLinkUrlInvalid };
+  }
+
+  const normalizedUrl = normalizeProjectLinkUrl(rawUrl);
+
+  if (!normalizedUrl) {
+    return { label: null, url: null, error: errors.projectLinkUrlInvalid };
+  }
+
+  return { label, url: normalizedUrl, error: null };
 }
 
 function getOrderedExistingSliderImages({
@@ -280,9 +312,14 @@ export async function updateBlogPost(
     formData.get("removeHeroSliderImages") === "on";
   const locale = await getLocale();
   const errors = getDictionary(locale).admin.errors;
+  const projectLink = getProjectLinkFields(formData, errors);
 
   if (!postId) {
     return { error: errors.postIdRequired };
+  }
+
+  if (projectLink.error) {
+    return { error: projectLink.error };
   }
 
   const fieldError = validatePostFields({
@@ -359,6 +396,8 @@ export async function updateBlogPost(
     excerpt_sq: excerptSq,
     content_sq: contentSq,
     hero_media_mode: heroMediaMode,
+    project_link_label: projectLink.label,
+    project_link_url: projectLink.url,
   };
 
   let uploadedHeroPath: string | null = null;

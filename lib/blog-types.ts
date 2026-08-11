@@ -14,6 +14,8 @@ export interface BlogPost {
   hero_media_mode: BlogHeroMediaMode;
   hero_slider_image_paths: string[];
   hero_slider_image_urls: string[];
+  project_link_label: string | null;
+  project_link_url: string | null;
   author: string;
   created_by: string;
   created_at: string;
@@ -31,6 +33,9 @@ export type BlogPostSummary = Pick<
   | "content"
   | "content_sq"
   | "hero_image_url"
+  | "hero_media_mode"
+  | "project_link_label"
+  | "project_link_url"
   | "author"
   | "created_at"
   | "updated_at"

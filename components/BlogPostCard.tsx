@@ -26,6 +26,8 @@ export default function BlogPostCard({
   const imageSizes = isHomeVariant
     ? "(min-width: 1280px) 416px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 92vw"
     : "(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 92vw";
+  const imagePosition =
+    post.hero_media_mode === "scroll" ? "object-top" : "object-center";
 
   return (
     <article
@@ -49,8 +51,8 @@ export default function BlogPostCard({
             quality={90}
             className={
               isHomeVariant
-                ? "object-cover transition-transform duration-500 group-hover:scale-[1.02]"
-                : "object-cover transition-transform duration-500 group-hover:scale-105"
+                ? `object-cover ${imagePosition} transition-transform duration-500 group-hover:scale-[1.02]`
+                : `object-cover ${imagePosition} transition-transform duration-500 group-hover:scale-105`
             }
           />
         ) : (
