@@ -22,7 +22,7 @@ export default function HeroMediaModeField({
   return (
     <div className="border-y border-zinc-200 py-4 dark:border-zinc-800">
       <input type="hidden" name="heroMediaMode" value={mode} />
-      <div className="flex items-start justify-between gap-4">
+      <div className="space-y-3">
         <div>
           <p
             id="hero-media-mode-label"
@@ -46,11 +46,14 @@ export default function HeroMediaModeField({
           onClick={() => {
             onChange(isScrollMode ? "slider" : "scroll");
           }}
-          className="flex shrink-0 flex-col items-end gap-2 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black dark:focus-visible:outline-white"
+          className="flex w-full items-center justify-between gap-3 border-2 border-zinc-200 bg-white px-3 py-2 text-left transition-colors hover:border-zinc-400 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black dark:border-zinc-800 dark:bg-black dark:hover:border-zinc-600 dark:focus-visible:outline-white"
         >
+          <span className="min-w-0 truncate text-[0.68rem] font-medium uppercase tracking-[0.12em] text-zinc-500 dark:text-zinc-400">
+            {isScrollMode ? scrollLabel : sliderLabel}
+          </span>
           <span
             aria-hidden="true"
-            className={`relative h-6 w-11 rounded-full transition-colors ${
+            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
               isScrollMode
                 ? "bg-black dark:bg-white"
                 : "bg-zinc-300 dark:bg-zinc-700"
@@ -63,9 +66,6 @@ export default function HeroMediaModeField({
                   : "translate-x-1 bg-white"
               }`}
             />
-          </span>
-          <span className="text-[0.65rem] font-medium uppercase tracking-[0.12em] text-zinc-500">
-            {isScrollMode ? scrollLabel : sliderLabel}
           </span>
         </button>
       </div>
