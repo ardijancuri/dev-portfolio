@@ -193,6 +193,54 @@ export default function BlogHeroMedia({
     };
   }, []);
 
+  useEffect(() => {
+    if (mode !== "scroll") {
+      return;
+    }
+
+    const viewport = viewportRef.current;
+
+    if (!viewport) {
+      return;
+    }
+
+    const handleWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+        return;
+      }
+
+      const pixelDeltaY =
+        event.deltaMode === WheelEvent.DOM_DELTA_LINE
+          ? event.deltaY * 16
+          : event.deltaMode === WheelEvent.DOM_DELTA_PAGE
+            ? event.deltaY * viewport.clientHeight
+            : event.deltaY;
+
+      const maxScrollTop = Math.max(
+        0,
+        viewport.scrollHeight - viewport.clientHeight
+      );
+      const nextScrollTop = viewport.scrollTop + pixelDeltaY;
+      const overflowTop = Math.min(0, nextScrollTop);
+      const overflowBottom = Math.max(0, nextScrollTop - maxScrollTop);
+      const pageDeltaY = overflowTop + overflowBottom;
+
+      if (pageDeltaY === 0) {
+        return;
+      }
+
+      event.preventDefault();
+      viewport.scrollTop = Math.min(maxScrollTop, Math.max(0, nextScrollTop));
+      window.scrollBy({ top: pageDeltaY, behavior: "instant" });
+    };
+
+    viewport.addEventListener("wheel", handleWheel, { passive: false });
+
+    return () => {
+      viewport.removeEventListener("wheel", handleWheel);
+    };
+  }, [mode]);
+
   if (mode === "scroll") {
     return (
       <figure
