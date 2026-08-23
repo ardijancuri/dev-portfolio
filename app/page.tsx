@@ -127,24 +127,26 @@ export default async function Home() {
       </section>
 
       {/* Blog Section */}
-      <section id="blog" className="px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
-        <div className="max-w-7xl mx-auto">
-          <div className="mb-16 border-t border-zinc-200 dark:border-zinc-800" />
-          <div className="mb-8 sm:mb-12 md:mb-16 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="mb-3 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
-                {t.home.blogEyebrow}
-              </p>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white">
-                {t.home.blogTitle}
-              </h2>
+      <section id="blog" className="overflow-x-clip py-16 sm:py-20 md:py-24">
+        <div className="blog-section-layout">
+          <div className="blog-section-header">
+            <div className="mb-16 border-t border-zinc-200 dark:border-zinc-800" />
+            <div className="mb-8 flex flex-col gap-4 sm:mb-12 sm:flex-row sm:items-end sm:justify-between md:mb-16">
+              <div>
+                <p className="mb-3 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
+                  {t.home.blogEyebrow}
+                </p>
+                <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white">
+                  {t.home.blogTitle}
+                </h2>
+              </div>
+              <Link
+                href="/blog"
+                className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-4 transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
+              >
+                {t.home.viewAllPosts}
+              </Link>
             </div>
-            <Link
-              href="/blog"
-              className="w-fit border-2 border-zinc-200 px-5 py-3 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
-            >
-              {t.home.viewAllPosts}
-            </Link>
           </div>
           <BlogSlider locale={locale} />
         </div>

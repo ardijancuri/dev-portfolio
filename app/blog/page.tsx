@@ -48,7 +48,7 @@ export default async function BlogPage() {
             </div>
             <Link
               href="/"
-              className="w-fit border-2 border-zinc-200 px-5 py-3 text-sm font-medium text-black transition-colors hover:border-black dark:border-zinc-800 dark:text-white dark:hover:border-white"
+              className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-4 transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
             >
               {t.blog.backHome}
             </Link>

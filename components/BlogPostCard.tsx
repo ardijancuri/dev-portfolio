@@ -1,5 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import type { MouseEvent as ReactMouseEvent } from "react";
 import type { BlogPostSummary } from "@/lib/blog-types";
 import { formatPostDate, getReadingTime } from "@/lib/blog-utils";
 import {
@@ -19,6 +23,7 @@ export default function BlogPostCard({
   variant?: "default" | "home";
   locale?: Locale;
 }) {
+  const router = useRouter();
   const isHomeVariant = variant === "home";
   const localizedPost = getLocalizedPost(post, locale);
   const t = getDictionary(locale);
@@ -28,12 +33,26 @@ export default function BlogPostCard({
     : "(min-width: 1280px) 400px, (min-width: 1024px) 31vw, (min-width: 640px) 45vw, 92vw";
   const imagePosition =
     post.hero_media_mode === "scroll" ? "object-top" : "object-center";
+  const openPostFromCard = (event: ReactMouseEvent<HTMLElement>) => {
+    if (!isHomeVariant) {
+      return;
+    }
+
+    const target = event.target as HTMLElement;
+
+    if (target.closest("a, button")) {
+      return;
+    }
+
+    router.push(postHref);
+  };
 
   return (
     <article
+      onClick={openPostFromCard}
       className={
         isHomeVariant
-          ? "group flex h-full flex-col border-2 border-zinc-200 bg-white transition-colors duration-200 hover:border-black dark:border-zinc-800 dark:bg-black dark:hover:border-white"
+          ? "group flex h-full cursor-pointer flex-col border-2 border-zinc-200 bg-white transition-colors duration-200 hover:border-black dark:border-zinc-800 dark:bg-black dark:hover:border-white"
           : "group flex h-full flex-col border-2 border-zinc-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-black hover:shadow-lg dark:border-zinc-800 dark:bg-black dark:hover:border-white"
       }
     >
