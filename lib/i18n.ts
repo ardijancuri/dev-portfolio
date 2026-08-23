@@ -32,7 +32,7 @@ export const dictionaries = {
       toggle: "Toggle theme",
     },
     home: {
-      role: "Entrepreneur & Software Engineer",
+      role: "Software Engineer",
       buildingAt: "Co-Founder of",
       bio: [
         "Oninova helps businesses turn ideas into digital products and grow online.",
@@ -223,7 +223,7 @@ export const dictionaries = {
       toggle: "Ndrysho temën",
     },
     home: {
-      role: "Sipërmarrës & Inxhinier Softueri",
+      role: "Inxhinier Softueri",
       buildingAt: "Bashkëthemelues i",
       bio: [
         "Oninova ndihmon bizneset t'i kthejnë idetë në produkte digjitale dhe të rriten online.",

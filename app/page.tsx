@@ -59,7 +59,10 @@ export default async function Home() {
                 Ardijan Curi
               </h1>
               <p className="text-xl sm:text-2xl md:text-2xl lg:text-3xl text-zinc-600 dark:text-zinc-400">
-                {t.home.role} <br></br> {t.home.buildingAt} <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="text-black dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors underline decoration-2 underline-offset-4">Oninova</a>
+                {t.home.buildingAt}{" "}
+                <a href="https://oninova.net" target="_blank" rel="noopener noreferrer" className="text-black dark:text-white hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors underline decoration-2 underline-offset-4">Oninova</a>
+                <br />
+                {t.home.role}
               </p>
               <div className="text-sm sm:text-base md:text-sm lg:text-base text-zinc-500 dark:text-zinc-500 leading-relaxed space-y-4">
                 {t.home.bio.map((paragraph) => (
