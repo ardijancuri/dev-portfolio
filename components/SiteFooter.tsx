@@ -16,7 +16,7 @@ export default function SiteFooter({
         </p>
         <nav
           aria-label="Social links"
-          className="flex items-center gap-1.5"
+          className="flex items-center gap-0.5"
         >
           <a
             href="https://oninova.net"
