@@ -109,7 +109,7 @@ export default async function BlogPostPage({
               <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
                 <Link
                   href="/blog"
-                  className="inline-flex border-2 border-zinc-200 px-4 py-2 text-sm font-medium text-black transition-colors hover:border-black focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-black dark:border-zinc-800 dark:text-white dark:hover:border-white dark:focus-visible:outline-white"
+                  className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-[6px] transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
                 >
                   {t.post.backToBlog}
                 </Link>

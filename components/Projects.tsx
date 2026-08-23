@@ -300,7 +300,7 @@ export default function Projects({
 
       {/* Pagination Controls */}
       {totalPages > 1 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-col items-center justify-between gap-4 pt-4 sm:flex-row">
           <div className="text-sm text-zinc-500 dark:text-zinc-500">
             {t.showing} {startIndex + 1}-{Math.min(endIndex, filteredRepos.length)} {t.of} {filteredRepos.length} {t.projects}
           </div>

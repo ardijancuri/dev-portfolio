@@ -37,7 +37,7 @@ export default async function BlogPage() {
       <main className="min-h-screen bg-white px-4 pt-32 text-black dark:bg-black dark:text-white sm:px-6 md:px-8 lg:px-12">
         <SiteHeader />
         <section className="mx-auto max-w-7xl py-12">
-          <div className="mb-12 flex flex-col gap-5 border-b border-zinc-200 pb-8 dark:border-zinc-800 md:flex-row md:items-end md:justify-between">
+          <div className="mb-12 flex flex-col gap-5 pb-8 md:flex-row md:items-end md:justify-between">
             <div>
               <p className="mb-4 text-sm font-medium uppercase text-zinc-500 dark:text-zinc-500">
                 {t.blog.title}
