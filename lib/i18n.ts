@@ -45,7 +45,8 @@ export const dictionaries = {
       blogSliderLabel: "Latest blog posts",
       previousPosts: "Previous posts",
       nextPosts: "Next posts",
-      projectsTitle: "Projects",
+      projectsTitle: "GitHub Projects",
+      viewGithub: "View GitHub",
       footerRights: "All rights reserved.",
     },
     blog: {
@@ -235,7 +236,8 @@ export const dictionaries = {
       blogSliderLabel: "Postimet e fundit në blog",
       previousPosts: "Postimet e mëparshme",
       nextPosts: "Postimet e radhës",
-      projectsTitle: "Projektet",
+      projectsTitle: "Projektet në GitHub",
+      viewGithub: "Shiko GitHub",
       footerRights: "Të gjitha të drejtat e rezervuara.",
     },
     blog: {

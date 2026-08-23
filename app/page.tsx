@@ -127,7 +127,7 @@ export default async function Home() {
       </section>
 
       {/* Blog Section */}
-      <section id="blog" className="overflow-x-clip py-16 sm:py-20 md:py-24">
+      <section id="blog" className="overflow-x-clip pb-12 pt-16 sm:pb-16 sm:pt-20 md:pb-20 md:pt-24">
         <div className="blog-section-layout">
           <div className="blog-section-header">
             <div className="mb-16 border-t border-zinc-200 dark:border-zinc-800" />
@@ -142,7 +142,7 @@ export default async function Home() {
               </div>
               <Link
                 href="/blog"
-                className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-4 transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
+                className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-[6px] transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
               >
                 {t.home.viewAllPosts}
               </Link>
@@ -153,11 +153,21 @@ export default async function Home() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="min-h-screen px-4 sm:px-6 md:px-8 lg:px-12 py-16 sm:py-20 md:py-24">
+      <section id="projects" className="min-h-screen px-4 pb-16 pt-12 sm:px-6 sm:pb-20 sm:pt-16 md:px-8 md:pb-24 md:pt-20 lg:px-12">
         <div className="max-w-5xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white mb-8 sm:mb-12 md:mb-16">
-            {t.home.projectsTitle}
-          </h2>
+          <div className="mb-8 flex flex-col gap-4 sm:mb-12 sm:flex-row sm:items-end sm:justify-between md:mb-16">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-black dark:text-white">
+              {t.home.projectsTitle}
+            </h2>
+            <a
+              href="https://github.com/ardijancuri"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-[6px] transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
+            >
+              {t.home.viewGithub}
+            </a>
+          </div>
           <Projects username="ardijancuri" locale={locale} />
         </div>
       </section>

@@ -48,7 +48,7 @@ export default async function BlogPage() {
             </div>
             <Link
               href="/"
-              className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-4 transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
+              className="w-fit text-sm font-medium text-black underline decoration-1 underline-offset-[6px] transition-colors hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-4 dark:text-white dark:hover:text-zinc-300"
             >
               {t.blog.backHome}
             </Link>

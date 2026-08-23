@@ -58,7 +58,7 @@ export default function BlogPostCard({
     >
       <Link
         href={postHref}
-        className="relative aspect-[16/10] overflow-hidden border-b-2 border-zinc-200 bg-zinc-100 dark:border-zinc-800 dark:bg-zinc-900"
+        className="relative aspect-[16/10] overflow-hidden bg-zinc-100 dark:bg-zinc-900"
         aria-label={localizedPost.title}
       >
         {post.hero_image_url ? (
