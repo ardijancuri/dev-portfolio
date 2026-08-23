@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Ardijan Curi | Software Engineer - Oninova",
+    default: "Ardijan Curi | Entrepreneur & Software Engineer - Oninova",
     template: "%s | Ardijan Curi",
   },
   description:
@@ -41,13 +41,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "Ardijan Curi",
-    title: "Ardijan Curi | Software Engineer - Oninova",
+    title: "Ardijan Curi | Entrepreneur & Software Engineer - Oninova",
     description:
       "Co-Founder & Software Engineer at Oninova. Building digital products, scalable web applications, and performance-driven solutions.",
   },
   twitter: {
     card: "summary",
-    title: "Ardijan Curi | Software Engineer - Oninova",
+    title: "Ardijan Curi | Entrepreneur & Software Engineer - Oninova",
     description:
       "Co-Founder & Software Engineer at Oninova. Building digital products, scalable web applications, and performance-driven solutions.",
   },

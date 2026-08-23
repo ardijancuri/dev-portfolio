@@ -13,7 +13,7 @@ export function isLocale(value: unknown): value is Locale {
 export const dictionaries = {
   en: {
     meta: {
-      homeTitle: "Ardijan Curi | Software Engineer - Oninova",
+      homeTitle: "Ardijan Curi | Entrepreneur & Software Engineer - Oninova",
       homeDescription:
         "Co-Founder & Software Engineer at Oninova. Building digital products, scalable web applications, and performance-driven solutions.",
       blogDescription:
@@ -32,12 +32,12 @@ export const dictionaries = {
       toggle: "Toggle theme",
     },
     home: {
-      role: "Co-Founder & Software Engineer",
-      buildingAt: "Building Digital Products at",
+      role: "Entrepreneur & Software Engineer",
+      buildingAt: "Co-Founder of",
       bio: [
-        "Co-founder of Oninova, a software development and marketing agency helping businesses grow through digital products and performance-driven campaigns.",
-        "I lead the technical side - architecture, backend, and frontend. Turning business requirements into clean, scalable software.",
-        "We bring together engineering and marketing to drive measurable results through custom software, automation, and data-informed strategies.",
+        "Oninova helps businesses turn ideas into digital products and grow online.",
+        "My role spans product and technology, from early strategy and architecture to development and launch.",
+        "The focus is on practical, scalable solutions that save time, improve operations, and create measurable value.",
       ],
       blogEyebrow: "Blog",
       blogTitle: "Latest writing",
@@ -204,7 +204,7 @@ export const dictionaries = {
   },
   sq: {
     meta: {
-      homeTitle: "Ardijan Curi | Inxhinier Softueri - Oninova",
+      homeTitle: "Ardijan Curi | Sipërmarrës & Inxhinier Softueri - Oninova",
       homeDescription:
         "Bashkëthemelues dhe Inxhinier Softueri në Oninova. Ndërtoj produkte digjitale, aplikacione web të shkallëzueshme dhe zgjidhje të orientuara nga performanca.",
       blogDescription:
@@ -223,12 +223,12 @@ export const dictionaries = {
       toggle: "Ndrysho temën",
     },
     home: {
-      role: "Bashkëthemelues & Inxhinier Softueri",
-      buildingAt: "Ndërtoj produkte digjitale te",
+      role: "Sipërmarrës & Inxhinier Softueri",
+      buildingAt: "Bashkëthemelues i",
       bio: [
-        "Bashkëthemelues i Oninova, një agjenci për zhvillim softueri dhe marketing që ndihmon bizneset të rriten përmes produkteve digjitale dhe fushatave të orientuara nga performanca.",
-        "Un udhëheq anën teknike - arkitekturën, backend-in dhe frontend-in. I kthej kërkesat e biznesit në softuer të pastër dhe të shkallëzueshëm.",
-        "Bashkojmë inxhinierinë dhe marketingun për të sjellë rezultate të matshme përmes softuerit të personalizuar, automatizimit dhe strategjive të bazuara në të dhëna.",
+        "Oninova ndihmon bizneset t'i kthejnë idetë në produkte digjitale dhe të rriten online.",
+        "Roli im përfshin produktin dhe teknologjinë, nga strategjia dhe arkitektura te zhvillimi dhe lançimi.",
+        "Fokusi është te zgjidhjet praktike dhe të shkallëzueshme që kursejnë kohë, përmirësojnë punën dhe krijojnë vlerë të matshme.",
       ],
       blogEyebrow: "Blogu",
       blogTitle: "Shkrimet e fundit",
