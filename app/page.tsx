@@ -69,21 +69,10 @@ export default async function Home() {
               {/* Social Links */}
               <div className="mt-4 grid grid-cols-2 sm:flex sm:flex-wrap gap-3 sm:gap-4 text-sm sm:text-base">
                 <a
-                  href="https://www.linkedin.com/in/ardijan-curi/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="sm:w-36 flex items-center justify-start gap-2 px-5 py-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors font-medium"
-                >
-                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-                  </svg>
-                  LinkedIn
-                </a>
-                <a
                   href="https://oninova.net"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="sm:w-36 flex items-center justify-start gap-2 px-5 py-2 border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-medium"
+                  className="sm:w-36 flex items-center justify-start gap-2 px-5 py-2 bg-black dark:bg-white text-white dark:text-black hover:bg-zinc-800 dark:hover:bg-zinc-200 transition-colors font-medium"
                 >
                   <svg
                     className="h-4 w-5 flex-shrink-0"
@@ -94,6 +83,17 @@ export default async function Home() {
                     <path d="M84.6736 0C78.6669 5.71521 72.448 13.859 71.9135 24.2362C71.3435 35.0719 76.3332 42.1423 82.3268 49.0801L88 55.6441C82.2206 48.9549 72.9434 40.4355 60.5261 39.8168C49.5652 39.2534 42.4131 44.1861 35.3952 50.1112L0 80C6.76651 74.2866 15.403 65.1357 16.0102 52.8399C16.5987 42.0244 11.5904 34.9338 5.61548 28.0181L0.0149001 21.5351C5.79428 28.2244 15.0715 36.7438 27.5075 37.3827C38.4683 37.9461 45.6036 32.9932 52.6197 27.0681L84.6736 0Z" />
                   </svg>
                   Oninova
+                </a>
+                <a
+                  href="https://www.linkedin.com/in/ardijan-curi/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sm:w-36 flex items-center justify-start gap-2 px-5 py-2 border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-medium"
+                >
+                  <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+                  </svg>
+                  LinkedIn
                 </a>
                 <a
                   href="https://github.com/ardijancuri"
@@ -111,7 +111,13 @@ export default async function Home() {
                   className="sm:w-36 flex items-center justify-start gap-2 px-5 py-2 border-2 border-black dark:border-white text-black dark:text-white hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors font-medium"
                 >
                   <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    <circle cx="12" cy="12" r="4" strokeWidth={2} />
+                    <path
+                      d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                    />
                   </svg>
                   Email
                 </a>
