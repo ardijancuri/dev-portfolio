@@ -334,19 +334,49 @@ export default function Projects({
 
             <div className="order-2 flex justify-center gap-2 sm:contents">
               <button
+                type="button"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className="h-9 min-w-20 cursor-pointer border-2 border-zinc-200 px-3 text-sm font-medium text-black transition-colors hover:border-black disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-zinc-200 dark:border-zinc-800 dark:text-white dark:hover:border-white dark:disabled:hover:border-zinc-800 sm:order-1"
+                aria-label={t.previous}
+                className="grid size-9 cursor-pointer place-items-center text-zinc-500 transition-colors hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:text-zinc-500 dark:text-zinc-400 dark:hover:text-white dark:disabled:hover:text-zinc-400 sm:order-1"
               >
-                {t.previous}
+                <svg
+                  aria-hidden="true"
+                  className="size-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m15 18-6-6 6-6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                  />
+                </svg>
               </button>
 
               <button
+                type="button"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className="h-9 min-w-20 cursor-pointer border-2 border-zinc-200 px-3 text-sm font-medium text-black transition-colors hover:border-black disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-zinc-200 dark:border-zinc-800 dark:text-white dark:hover:border-white dark:disabled:hover:border-zinc-800 sm:order-3"
+                aria-label={t.next}
+                className="grid size-9 cursor-pointer place-items-center text-zinc-500 transition-colors hover:text-black focus-visible:outline-2 focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-30 disabled:hover:text-zinc-500 dark:text-zinc-400 dark:hover:text-white dark:disabled:hover:text-zinc-400 sm:order-3"
               >
-                {t.next}
+                <svg
+                  aria-hidden="true"
+                  className="size-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="m9 18 6-6-6-6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                  />
+                </svg>
               </button>
             </div>
           </div>
