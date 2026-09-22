@@ -1,5 +1,7 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
+import { BLOG_IMAGE_CACHE_CONTROL, prepareBlogUploadBatch } from "@/lib/optimize-blog-image";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/admin";
@@ -365,6 +367,32 @@ export async function updateBlogPost(
     return { error: errors.notFound };
   }
 
+  if (heroImage instanceof File && heroImage.size > 0) {
+    const heroError = validateHeroImage(
+      heroImage,
+      errors,
+      heroMediaMode === "scroll"
+        ? MAX_SCROLL_HERO_IMAGE_BYTES
+        : MAX_HERO_IMAGE_BYTES
+    );
+
+    if (heroError) {
+      return { error: heroError };
+    }
+
+  }
+
+  let prepared: Awaited<ReturnType<typeof prepareBlogUploadBatch>>;
+  try {
+    prepared = await prepareBlogUploadBatch(
+      heroImage instanceof File && heroImage.size > 0 ? heroImage : null,
+      heroSliderImages,
+      heroMediaMode,
+    );
+  } catch {
+    return { error: errors.heroInvalid };
+  }
+
   let slug = slugifyTitle(title);
 
   if (!slug) {
@@ -408,30 +436,13 @@ export async function updateBlogPost(
     (currentPost.hero_slider_image_urls as string[] | null) ?? [];
 
   if (heroImage instanceof File && heroImage.size > 0) {
-    const heroError = validateHeroImage(
-      heroImage,
-      errors,
-      heroMediaMode === "scroll"
-        ? MAX_SCROLL_HERO_IMAGE_BYTES
-        : MAX_HERO_IMAGE_BYTES
-    );
-
-    if (heroError) {
-      return { error: heroError };
-    }
-
-    const extension = extensionForMimeType(heroImage.type);
-
-    if (!extension) {
-      return { error: errors.heroUnsupported };
-    }
-
-    const heroPath = `${userId}/${Date.now()}-${slug}.${extension}`;
+    if (!prepared.hero) return { error: errors.heroRequired };
+    const heroPath = `${userId}/optimized/v1/${randomUUID()}.${prepared.hero.extension}`;
     const { error: uploadError } = await supabase.storage
       .from(BLOG_HERO_BUCKET)
-      .upload(heroPath, heroImage, {
-        cacheControl: "31536000",
-        contentType: heroImage.type,
+      .upload(heroPath, prepared.hero.buffer, {
+        cacheControl: BLOG_IMAGE_CACHE_CONTROL,
+        contentType: prepared.hero.contentType,
         upsert: false,
       });
 
@@ -451,33 +462,14 @@ export async function updateBlogPost(
   if (heroSliderImages.length > 0) {
     const heroSliderImageUrls: string[] = [];
 
-    for (const [index, sliderImage] of heroSliderImages.entries()) {
-      const sliderExtension = extensionForMimeType(sliderImage.type);
-
-      if (!sliderExtension) {
-        if (uploadedHeroPath) {
-          await supabase.storage
-            .from(BLOG_HERO_BUCKET)
-            .remove([uploadedHeroPath]);
-        }
-
-        if (uploadedSliderPaths.length > 0) {
-          await supabase.storage
-            .from(BLOG_HERO_BUCKET)
-            .remove(uploadedSliderPaths);
-        }
-
-        return { error: errors.heroUnsupported };
-      }
-
-      const sliderImagePath = `${userId}/${Date.now()}-${slug}-slider-${
-        index + 1
-      }.${sliderExtension}`;
+    for (const index of heroSliderImages.keys()) {
+      const optimizedSlide = prepared.slides[index];
+      const sliderImagePath = `${userId}/optimized/v1/${randomUUID()}.${optimizedSlide.extension}`;
       const { error: sliderUploadError } = await supabase.storage
         .from(BLOG_HERO_BUCKET)
-        .upload(sliderImagePath, sliderImage, {
-          cacheControl: "31536000",
-          contentType: sliderImage.type,
+        .upload(sliderImagePath, optimizedSlide.buffer, {
+          cacheControl: BLOG_IMAGE_CACHE_CONTROL,
+          contentType: optimizedSlide.contentType,
           upsert: false,
         });
 

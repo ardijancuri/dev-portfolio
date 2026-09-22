@@ -183,6 +183,7 @@ export const dictionaries = {
         heroScrollSize:
           "The full-page website screenshot must be 15 MB or smaller.",
         heroUnsupported: "Unsupported hero image file type.",
+        heroInvalid: "This image could not be processed. Please choose a valid, smaller image.",
         heroSliderLimit: "Upload up to 5 hero slider images.",
         heroSliderOrderInvalid: "Hero slider image order is invalid.",
         projectLinkIncomplete:
@@ -375,6 +376,7 @@ export const dictionaries = {
         heroScrollSize:
           "Screenshot-i i faqes së plotë duhet të jetë 15 MB ose më i vogël.",
         heroUnsupported: "Lloj i pambështetur i imazhit kryesor.",
+        heroInvalid: "Imazhi nuk mund të përpunohej. Zgjidh një imazh të vlefshëm me madhësi më të vogël.",
         heroSliderLimit: "Ngarko deri ne 5 imazhe per sliderin kryesor.",
         heroSliderOrderInvalid:
           "Renditja e imazheve te sliderit kryesor nuk eshte e vlefshme.",
